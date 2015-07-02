@@ -136,6 +136,11 @@ All Elements inside it with the `view` attribute will have their data sampled an
 <script>
 	//Will return { name: 'content', date: 'yyyy-mm-dd', field: "Some Not-Input Element" }
 	console.log(Front.model.data("foo"));
+	
+	//Will fill the Element's 'value' when their 'view' matches the obj 'variables'
+	var d = { name: "NAME", date: "2000-01-01", field: "LOL" };
+	Front.model.data("foo",d);
+	
 </script>
 ```
 
