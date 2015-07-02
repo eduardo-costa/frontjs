@@ -158,6 +158,18 @@ It is possible to keep track of Model updates in the DOM.
 //Will watch if 'some.model' changes its content and emmits a `model` event for all controllers, informing the new `data`.
 //If the `MutationObserver` class exists, DOM changes inside the model will also be notified as an `update` event.
 Front.model.watch("some.model",true);
+
+Front.controller.add(
+{
+	on: function(p_path,p_event,p_target,p_data)
+	{
+		if(p_event == "model")
+		{
+			if(Front.model.attribute(p_target) == "some.model") console.log(p_data);
+		}
+	}
+});
+
 ```
 
 ## View

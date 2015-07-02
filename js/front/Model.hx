@@ -59,4 +59,10 @@ extern class Model
 	@:overload(function(p_target:Element):Dynamic{})
 	function value(p_target:Element, p_value:Dynamic):Dynamic;
 	
+	/**
+	 * Returns the Element 'model' attribute.
+	 * @param	p_target	 
+	 */	
+	function attribute(p_target:Element):String;
+	
 }

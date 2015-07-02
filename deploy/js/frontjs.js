@@ -158,6 +158,11 @@ var Front =
 			}
 		},
 		
+		/**
+		Returns the 'model' attribute of the target.
+		//*/
+		attribute: function(p_target) { return Front.attribute(p_target,"model"); }
+		
 	},
 	
 	/**
@@ -337,7 +342,13 @@ var Front =
 				if(pth.length<=0) { res = n; return false; }
 			});			
 			return res;
-		}
+		},
+		
+		/**
+		Returns the 'view' attribute of the target.
+		//*/
+		attribute: function(p_target) { return Front.attribute(p_target,"view"); }
+		
 	},
 	
 	/**

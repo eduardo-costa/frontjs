@@ -31,5 +31,11 @@ extern class View
 	 * @return
 	 */
 	function get(p_path:String):Element;
+	
+	/**
+	 * Returns the Element 'view' attribute.
+	 * @param	p_target	 
+	 */	
+	function attribute(p_target:Element):String;
 		
 }
