@@ -145,7 +145,7 @@ It is possible to keep track of Model updates in the DOM.
 
 ```javascript
 //Will watch if 'some.model' changes its content and emmits a `model` event for all controllers, informing the new `data`.
-//If the `MutationObserver` class exists, DOM changes inside the model will also be notified.
+//If the `MutationObserver` class exists, DOM changes inside the model will also be notified as an `update` event.
 Front.model.watch("some.model",true);
 ```
 
@@ -179,7 +179,7 @@ You can listen to more events besides the default ones:
 ```javascript
 //Enables the mouseover event.
 Front.listen("mouseover",true);
-//Disablea the mouseout event.
+//Disables the mouseout event.
 Front.listen("mouseout",false);
 ```
 
