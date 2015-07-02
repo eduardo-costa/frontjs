@@ -73,8 +73,15 @@ Create a Controller instance following this template:
 ```javascript
 var simple_controller =
 {
+	//View Path RegExp tester. default=null
 	var route: /some.regexp/,
+	//Allowed events. default="click,change,input"	
 	var allow: "click,focus,model",
+	//'on' callback
+	//path   = Container View path or "" if none
+	//event  = event.type
+	//target = event.target
+	//data   = Model data when 'model' event or if informed in Front.model.dispatch call
 	var on: function(path,event_type,target,data) { }
 };
 Front.controller.add(simple_controller,[/some.other.regexp/]);
