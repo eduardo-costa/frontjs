@@ -1,5 +1,5 @@
 # FrontJS  
-Straightforward front-end MVC Javascript Framework  
+Straightforward front-end MVC Javascript and Haxe Framework  
 
 # Install 
 
