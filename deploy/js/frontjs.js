@@ -65,13 +65,26 @@ var Front =
 		},
 		
 		/**
-		Fetches a model data using the 'model' attribute in the DOM as guide.
+		Get or Set a model data using the 'model' attribute in the DOM as guide.
 		//*/
-		data: function(p_id)
+		data: function(p_id,p_value)
 		{
 			var fjs = Front;
-			var d = { };	
 			var ref = this;
+			
+			if(p_value != null)
+			{
+				var m = ref.get(p_id);
+				if(m==null) return;
+				for(var s in p_value)
+				{
+					var vn = fjs.find("view",s,m);
+					ref.value(vn,p_value[s]);
+				}
+				return p_value;
+			}
+			
+			var d = { };				
 			fjs.traverse(fjs.root,function(n)
 			{				
 				var mid = n.getAttribute("model");
@@ -428,10 +441,11 @@ var Front =
 	/**
 	Searches a given DOM by its attribute and its value.
 	//*/
-	find: function(p_attrib,p_value)
+	find: function(p_attrib,p_value,p_from)
 	{
 		var res = null;
-		ref.traverse(ref.root,function(n)
+		var t = p_from==null ? ref.root : p_from;
+		ref.traverse(t,function(n)
 		{
 			if(res!=null) return false;
 			if(n.getAttribute==null)return;

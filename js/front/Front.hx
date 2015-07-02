@@ -74,12 +74,14 @@ extern class Front
 	static function listen(p_event:String, p_flag:Bool):Void;
 	
 	/**
-	 * Searches the first Element which matches an 'attribute' with 'value'.
+	 * Searches the first Element which matches an 'attribute' with 'value', starting at 'from'. If 'from' is null, it will start from the 'body'
 	 * @param	p_attribute
 	 * @param	p_value
+	 * @param	p_from
 	 * @return
 	 */
-	static function find(p_attribute:String, p_value:String):Element;
+	@:overload(function(p_attribute:String, p_value:String):Element{})
+	static function find(p_attribute:String, p_value:String,p_from:Element):Element;
 	
 	/**
 	 * Traverses the DOM hierarchy of the informed Element, calling 'callback' on each visit, including the element itself.

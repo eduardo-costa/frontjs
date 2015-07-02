@@ -42,11 +42,13 @@ extern class Model
 	function get(p_id:String):Element;
 	
 	/**
-	 * Returns a Model data as object searching by the 'model' attribute.
+	 * Get or Set a Model data indexed by 'id'. If the data is being set, it tries to matches the first 'view' inside the model.
 	 * @param	p_id
+	 * @param	p_value
 	 * @return
 	 */
-	function data(p_id:String):Dynamic;
+	@:overload(function(p_id:String):Dynamic{})
+	function data(p_id:String,p_value:Dynamic):Dynamic;
 
 	/**
 	 * Get or Set the relevant value of an Element. For 'input' it will be 'value', 'select' will be 'selectedIndex' and so on.
