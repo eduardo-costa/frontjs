@@ -1,0 +1,14 @@
+{
+  "name": "fronthx",
+  "url": "https://github.com/eduardo-costa/frontjs",
+  "license": "MIT",
+  "tags": ["mvc","model","view","controller","mutation","bind"],
+  "description": "FrontEnd Framework for Haxe Javascript",
+  "version": "0.1.0",
+  "releasenotes": "0.1.0",
+  "contributors": ["eduardo-costa"],
+  "dependencies": 
+  {
+	  
+  }
+}
