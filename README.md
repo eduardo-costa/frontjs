@@ -35,7 +35,7 @@ import js.front.Front;
 First mark in the HTML whose elements will be **Views** and/or **Models**
 
 ```html
-<div view="content" model="content.form">
+<div view="content" model="app.model">
 	<div view="form">
 		<input type="text" view="name">
 	</div>
@@ -139,8 +139,7 @@ All Elements inside it with the `view` attribute will have their data sampled an
 	
 	//Will fill the Element's 'value' when their 'view' matches the obj 'variables'
 	var d = { name: "NAME", date: "2000-01-01", field: "LOL" };
-	Front.model.data("foo",d);
-	
+	Front.model.data("foo",d);	
 </script>
 ```
 
