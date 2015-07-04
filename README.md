@@ -1,6 +1,55 @@
 # FrontJS  
 
-Clean and Fast MVC for your Front-End app.
+Clean and Fast MVC for your Front-End app. Plug and Play your controller classes with the smallest code footprint.
+```html
+<div view="home">
+  <div view="content">
+  </div>
+  <div view="footer">
+  </div>
+</div>
+<div view="gallery">
+  <div view="header">
+  </div>
+  <div view="pages">
+  </div>
+</div>
+```
+
+```javascript
+Front.initialize();
+
+//Home event controller
+Front.controller.add(
+{
+  //RegExp of the chosen view route or null if capture all.
+  route: /home./, 
+  //Allowed events
+  allow: "click,input",
+  on: function(path,type,target)
+  {
+    //handle all events in 'allow'
+    //filter by view 'path' or 'type'
+    switch(path)
+    {
+      case "home.content": break;
+      case "home.footer": break;
+    }
+  }
+});
+
+//Gallery event controller
+Front.controller.add(
+{
+  route: /gallery./,
+  allow: "click,input,change",
+  on: function(path,ev,target)
+  {
+  
+  }
+});
+```
+
 
 # Install 
 
