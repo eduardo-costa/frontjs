@@ -1,31 +1,46 @@
 # FrontJS  
-Straightforward front-end MVC Javascript and Haxe Framework  
+
+Clean and Fast MVC for your Front-End app.
 
 # Install 
 
 ## Javascript
 Include the sources:
 
+### Local
 ```html
 <script src="js/frontjs.js">
-```
-or
-```html
+<!-- minified -->
 <script src="js/frontjs.min.js">
 ```
 
+### CDN
+```html
+<script src="http://cdn.thelaborat.org/frontjs/frontjs.js">
+<script src="http://cdn.thelaborat.org/frontjs/frontjs.min.js">
+
+<!-- Custom Version -->
+<script src="http://cdn.thelaborat.org/frontjs/0.4.0/frontjs.js">
+<script src="http://cdn.thelaborat.org/frontjs/0.4.0/frontjs.min.js">
+```
+
+
 ## Haxe
 
-Install the `fronthx` library:
-```
+* Add the `js` sources on your HTML page.
+* Install the `fronthx` library:
+```CLI
 haxelib git fronthx https://github.com/eduardo-costa/frontjs
-```
+```  
+Include the library when compiling:  
 
-After adding the sources in the HTML.
+```CLI
+haxe ... -lib fronthx ...
+```
+Include the references on your Haxe source.
 ```haxe
 import js.front.Front;
 ```
-
 
 # Usage
 
