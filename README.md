@@ -50,6 +50,11 @@ Front.controller.add(
 });
 ```
 
+# Example
+
+Simple example, showing controllers and examples.
+http://codepen.io/eduardo_costa/pen/pJLoKd
+
 
 # Install 
 
