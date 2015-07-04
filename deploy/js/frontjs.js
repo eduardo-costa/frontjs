@@ -184,8 +184,8 @@ var Front =
 		{		
 			var ref = this;
 			var t = p_target;
-			if(ref.list.indexOf(t) < 0) ref.list.push(t);
-			t.route = p_route==null ? /(.*?)/ : p_route;
+			if(ref.list.indexOf(t) < 0) ref.list.push(t);			
+			t.route = t.route==null ? (p_route==null ? /(.*?)/ : p_route) : t.route;
 			if(t.allow==null) t.allow="";
 			if(t.allow=="") t.allow = "click,change,input,model";
 		},
