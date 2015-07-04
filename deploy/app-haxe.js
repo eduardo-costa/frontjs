@@ -19,15 +19,19 @@ js_front_BaseController.prototype = {
 };
 var SimpleController = function(p_name) {
 	js_front_BaseController.call(this,p_name);
-	this.allow = "model";
+	this.allow = "model,click";
 };
 SimpleController.__name__ = ["SimpleController"];
 SimpleController.__super__ = js_front_BaseController;
 SimpleController.prototype = $extend(js_front_BaseController.prototype,{
 	on: function(p_path,p_event,p_target,p_data) {
+		console.log(">> " + p_event);
 		switch(p_event) {
 		case "model":
 			console.log(p_data);
+			break;
+		case "click":
+			console.log(p_path);
 			break;
 		}
 	}
@@ -37,8 +41,8 @@ var HaxeTest = function() { };
 HaxeTest.__name__ = ["HaxeTest"];
 HaxeTest.main = function() {
 	console.log("FrontJS> Haxe Example");
-	Front.initialize();
 	window.onload = function(p_event) {
+		Front.initialize();
 		console.log(Front.model.data("home.form"));
 		Front.model.watch("home.form",true);
 		Front.controller.add(new SimpleController("simple"));

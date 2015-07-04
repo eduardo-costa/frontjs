@@ -67,6 +67,12 @@ extern class Front
 	static function initialize(p_root:Element, p_events:Array<String>):Void;
 	
 	/**
+	 * Sets the event handling root element.
+	 * @param	p_root
+	 */
+	static function setRoot(p_root:Element):Void;
+	
+	/**
 	 * Sets the listening flag for a given event.
 	 * @param	p_event
 	 * @param	p_flag

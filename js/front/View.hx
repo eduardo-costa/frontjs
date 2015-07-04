@@ -17,13 +17,24 @@ extern class View
 	function context(p_target:Element):Element;
 	
 	/**
-	 * Returns the path separated by '.' of the element. If forced, returns the path of the container View of it.
+	 * Check if a given element or element's id is a view.	If forced checks if inside a view context.
 	 * @param	p_target
 	 * @param	p_force
 	 * @return
 	 */	
-	@:overload(function(p_target:Element):String { } )	
-	function is(p_target:Element, p_force:Bool):String;
+	@:overload(function(p_target:String):Bool { } )
+	@:overload(function(p_target:Element):Bool { } )
+	@:overload(function(p_target:String, p_force:Bool):Bool { } )		
+	function is(p_target:Element, p_force:Bool):Bool;
+	
+	/**
+	 * Returns the target Element's path separated by '.', if forced, returns the path of first view container found.
+	 * @param	p_target
+	 * @param	p_force
+	 * @return
+	 */
+	@:overload(function(p_target:Element):String { } )		
+	function path(p_target:Element, p_force:Bool):String;
 	
 	/**
 	 * Returns a View Element.
@@ -31,6 +42,13 @@ extern class View
 	 * @return
 	 */
 	function get(p_path:String):Element;
+	
+	/**
+	 * Returns the view's parent.
+	 * @param	p_path
+	 * @return
+	 */
+	function parent(p_path:String):Element;
 	
 	/**
 	 * Returns the Element 'view' attribute.

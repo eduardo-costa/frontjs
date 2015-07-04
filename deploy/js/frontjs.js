@@ -87,6 +87,7 @@ var Front =
 			var d = { };				
 			fjs.traverse(fjs.root,function(n)
 			{				
+				if(n==null) return;
 				var mid = n.getAttribute("model");
 				if(mid==null) return;				
 				if(mid!=p_id) return;				
@@ -123,12 +124,13 @@ var Front =
 					switch(itp)
 					{
 						case "checkbox": return p_value==null ? t.checked : (t.checked=p_value); break;
-						default: 		 return p_value==null ? t.value : (t.value=p_value); break;
+						default: 		 return p_value==null ? t.value : (t.value=p_value); 	 break;
 					}							
 				}
 				break;						
-				case "select":  return p_value==null ? t.selectedIndex : (t.selectedIndex=p_value); break;
-				default: 		return p_value==null ? t.textContent : (t.textContent=p_value); break;
+				case "select":   return p_value==null ? t.selectedIndex : (t.selectedIndex=p_value); break;
+				case "textarea": return p_value==null ? t.value : (t.value=p_value); 	 break;
+				default: 		 return p_value==null ? t.textContent : (t.textContent=p_value); break;
 			}
 			return p_value;
 		},
@@ -265,8 +267,7 @@ var Front =
 	view: 
 	{
 		/**
-		Check if a given element or element's id is a view.
-		If forced checks if inside a model context.
+		Check if a given element or element's id is a view.	If forced checks if inside a view context.
 		//*/
 		is: function(p_target,p_force)
 		{
@@ -278,7 +279,7 @@ var Front =
 		},
 		
 		/**
-		Returns the model context the target is inserted.		
+		Returns the view context the target is inserted.		
 		//*/
 		context: function(p_target)
 		{
@@ -294,8 +295,8 @@ var Front =
 		},
 		
 		/**
-		Returns the dot path of all view to this element. 
-		If forced the view path that contains this element is returned.
+		Returns the dot path of all view to this element.
+		If the element is not a view an empty string is returned unless, if forced the closest view path that contains this element is returned.
 		//*/
 		path: function(p_target,p_force)
 		{
@@ -345,6 +346,18 @@ var Front =
 		},
 		
 		/**
+		Returns the view's parent.
+		//*/
+		parent: function(p_path)
+		{
+			var ref = this;
+			var tks = p_path.split(".");
+			tks.pop();
+			var pth = tks.join(".");
+			return ref.get(pth);
+		},
+		
+		/**
 		Returns the 'view' attribute of the target.
 		//*/
 		attribute: function(p_target) { return Front.attribute(p_target,"view"); }
@@ -377,16 +390,25 @@ var Front =
 	enabled: true,
 	
 	/**
-	Window onload callback.
+	Sets the event handling root element.
 	//*/
-	onload: function()
-	{		
-		window.removeEventListener("load",ref.onload);		
-		if(ref.root==null) ref.root = document.body;		
-		console.log("FrontJS> Initialize ["+ref.root+"]");
-		var config = { attributes: true, childList: true, characterData: true, subtree: true };
-		ref.observer.observe(ref.root,config);		
-		for(var i=0;i<ref.events.length;i++) ref.listen(ref.events[i],true);		
+	setRoot: function(p_root)
+	{
+		if(ref.root != null)
+		{
+			for(var i=0;i<ref.events.length;i++) ref.listen(ref.events[i],false);			
+			ref.observer.disconnect();
+		}		
+		
+		ref.root = p_root;
+		
+		if(ref.root != null)
+		{
+			for(var i=0;i<ref.events.length;i++) ref.listen(ref.events[i],true);
+			
+			var config = { attributes: true, childList: true, characterData: true, subtree: true };
+			ref.observer.observe(ref.root,config);			
+		}
 	},
 	
 	/**
@@ -394,7 +416,9 @@ var Front =
 	//*/
 	listen:function(p_event,p_flag)
 	{
-		var fn = p_flag ? document.body.addEventListener : document.body.removeEventListener;		
+		if(ref.root == null) return;
+		var e  = ref.root;
+		var fn = p_flag ? e.addEventListener : e.removeEventListener;		
 		var f  = ("focus,blur".indexOf(p_event) >= 0) && p_flag;
 		if(f) fn(p_event,ref.onevent,true); fn(p_event,ref.onevent);
 	},
@@ -413,7 +437,7 @@ var Front =
 			case "input":				
 				ref.model.onevent(e,t);
 			break;
-		}		
+		}				
 		ref.controller.dispatch(e,t);
 	},
 	
@@ -422,9 +446,11 @@ var Front =
 	//*/
 	initialize: function(p_root,p_events)
 	{		
-		ref  = this;
-		ref.root = p_root==null ? (document != null ? document.body : null) : p_root;
-		if(p_events != null) ref.events = p_events;
+		ref = this;
+		
+		ref.events = p_events==null ? ref.events : p_events;		
+		ref.root   = p_root;
+		
 		if(MutationObserver == null)
 		{
 			console.warn("FrontJS> MutationObserver class not found.");
@@ -433,7 +459,39 @@ var Front =
 		{
 			ref.observer = new MutationObserver(ref.onmutation);		
 		}
-		window.addEventListener("load",ref.onload);
+		
+		if(ref.root == null)
+		{
+			if(document.body == null)
+			{
+				window.addEventListener("load",ref.onload);
+			}
+			else
+			{
+				ref.root = document.body;
+			}
+		}
+		
+		
+		if(ref.root != null)
+		{
+			console.log("FrontJS> Initialize ["+ref.root+"]");
+			ref.setRoot(ref.root);
+		}
+	},
+	
+	/**
+	Window onload callback.
+	//*/
+	onload: function()
+	{		
+		window.removeEventListener("load",ref.onload);		
+		if(ref.root==null)
+		{
+			ref.root = document.body;
+			console.log("FrontJS> Initialize ["+ref.root+"]");
+			ref.setRoot(ref.root);
+		}
 	},
 	
 	/**
