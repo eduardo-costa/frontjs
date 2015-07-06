@@ -545,6 +545,7 @@ var Front =
 	
 	/**
 	Traverse the DOM Node, calling a callback.
+	If the specified callback returns a Boolean, the traversal can be stopped in the current depth.
 	//*/
 	traverse: function(n,cb)
 	{
