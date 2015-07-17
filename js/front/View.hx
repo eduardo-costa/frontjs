@@ -44,11 +44,29 @@ extern class View
 	function get(p_path:String):Element;
 	
 	/**
+	 * Searches a View by its id.
+	 * If the flag 'all' is informed, all occurrences are returned.
+	 * @param	p_id
+	 * @return
+	 */
+	@:overload(function(p_id:String, p_all:Bool):Array<Element> { } )	
+	function find(p_id:String):Element;
+	
+	/**
 	 * Returns the view's parent.
 	 * @param	p_path
 	 * @return
 	 */
+	@:overload(function(p_element:Element):Element { } )	
 	function parent(p_path:String):Element;
+	
+	/**
+	 * Finds an element with 'template' attribute and clones it.
+	 * @param	p_path
+	 * @return
+	 */
+	@:overload(function(p_element:Element):Element { } )		
+	function clone(p_path:String):Element;
 	
 	/**
 	 * Returns the Element 'view' attribute.

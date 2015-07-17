@@ -264,6 +264,25 @@ Similarly in Haxe:
 var div : DivElement = cast Front.view.get("content.form");
 ```
 
+### Templates
+
+Some times we want to duplicate items in a list. 
+For these cases, it is possible to mark elements with `template`. 
+They will be invisible and cloneable using the method `Front.view.clone(path | element)`.
+
+```html
+<ul view="list">
+  <li view="item" template>This is Template</li>
+</ul>
+```
+
+```javascript
+var list = Front.view.get("list");
+var new_item = Front.view.clone("list.item");
+new_item.textContent = "Item X";
+list.appendChild(new_item);
+```
+
 
 ## Events
 

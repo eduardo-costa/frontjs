@@ -324,7 +324,7 @@ var Front =
 		},
 		
 		/**
-		Returns the view element's path.
+		Returns the view element's by its path.
 		//*/
 		get: function(p_path)
 		{
@@ -346,15 +346,78 @@ var Front =
 		},
 		
 		/**
+		Searches a View by its id alone. If the flag 'all' is passed all occurrences are returned.
+		//*/
+		find: function(p_id,p_all)
+		{
+			var all = p_all==null ? false : p_all;
+			var fjs = Front;
+			var res = all ? [] : null;
+			fjs.traverse(fjs.root,function(n)
+			{
+				var vid = fjs.attribute(n,"view");				
+				if(vid=="")   return;				
+				if(vid==p_id)
+				{					
+					if(!all) 
+					{
+						if(res==null) { res = n; return false; }
+						if(res!=null) return false;
+					}
+					res.push(n);
+				}
+			});	
+			return res;
+		},
+		
+		/**
+		Clones a given View if the 'template' attribute is available.
+		//*/
+		clone: function(p_target)
+		{
+			
+			var fjs = Front;
+			var ref = this;
+			var c = null;
+			if(typeof(p_target) =="string")
+			{
+				var t = ref.get(p_target);
+				if(t==null) return null;
+				if(t.getAttribute==null) return null;
+				if(t.getAttribute("template")==null) return null;
+				c = t;
+			}
+			else
+			{
+				c = p_target;
+			}						
+			c = c.cloneNode(true);
+			c.removeAttribute("template");
+			return c;
+		},
+		
+		/**
 		Returns the view's parent.
 		//*/
-		parent: function(p_path)
+		parent: function(p_target)
 		{
+			var fjs = Front;
 			var ref = this;
-			var tks = p_path.split(".");
-			tks.pop();
-			var pth = tks.join(".");
-			return ref.get(pth);
+			if(p_target==null) return null;
+			if(typeof(p_target) =="string")
+			{
+				var tks = p_path.split(".");
+				tks.pop();
+				var pth = tks.join(".");
+				return ref.get(pth);
+			}
+			var n = p_target.parentNode;
+			while(n != null)
+			{
+				if(Front.view.is(n)) return n;
+				n = n.parentNode;
+			}	
+			return null;
 		},
 		
 		/**
@@ -408,6 +471,11 @@ var Front =
 			
 			var config = { attributes: true, childList: true, characterData: true, subtree: true };
 			ref.observer.observe(ref.root,config);			
+			
+			//Make 'template' Elements disappear
+			var sheet = document.styleSheets[0];
+			sheet.insertRule("*[template] { display: none; }", 1);
+			
 		}
 	},
 	
