@@ -7,7 +7,69 @@ import js.html.MutationRecord;
 import js.html.ScriptElement;
 import js.html.StyleElement;
 import js.html.Uint8Array;
+import js.html.XMLHttpRequest;
+import haxe.ds.Either;
 
+typedef RequestCallbackComplete = Dynamic->Float->XMLHttpRequest->Error->Void;
+typedef RequestCallbackSimple   = Dynamic->Float->Void;
+
+/**
+ * Class that handles XMLHttpRequest for FrontJS applications..
+ */
+extern class FrontRequest
+{		
+	/**
+	 * Creates a XMLHttpRequest setup for sending/receiving data.
+	 * Defaults to GET.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @param	p_method
+	 */
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic,p_binary:Bool):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete, p_data:Dynamic, p_binary:Bool, p_method:String):XMLHttpRequest { } )	
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic,p_binary:Bool):XMLHttpRequest{})
+	function create(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic,p_binary:Bool,p_method:String):XMLHttpRequest;
+	
+	/**
+	 * Creates a GET XMLHttpRequest setup for sending/receiving data.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @return
+	 */
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic,p_binary:Bool):XMLHttpRequest{})		
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic):XMLHttpRequest{})	
+	function get(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic,p_binary:Bool):XMLHttpRequest;
+	
+	/**
+	 * Creates a POST XMLHttpRequest setup for sending notification data.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @return
+	 */
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackComplete,p_data:Dynamic,p_binary:Bool):XMLHttpRequest{})		
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic):XMLHttpRequest{})	
+	function post(p_url:String, p_callback: RequestCallbackSimple,p_data:Dynamic,p_binary:Bool):XMLHttpRequest;
+	
+}
 
 /**
  * Class that represents a WebBundle instance.
@@ -56,6 +118,11 @@ extern class Front
 	 * Reference to the Controller manager.
 	 */
 	static var controller : Controller;
+	
+	/**
+	 * Reference to the XMLHttpRequest handler.
+	 */
+	static var request : FrontRequest;
 	
 	/**
 	 * Initializes the front-end informing the root Element and initial set of events.

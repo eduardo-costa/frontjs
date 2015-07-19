@@ -1,5 +1,6 @@
 package js.front;
 import js.html.Element;
+import js.html.XMLHttpRequest;
 import js.RegExp;
 
 /**
@@ -50,6 +51,76 @@ class BaseController
 }
 
 /**
+ * Class that handles XMLHttpRequest for controllers.
+ */
+extern class ControllerRequest
+{
+	/**
+	 * Default URL for sending notification requests.
+	 */
+	var service : String;
+	
+	/**
+	 * Creates a XMLHttpRequest setup for sending notification data.
+	 * Defaults to GET.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @param	p_method
+	 */
+	@:overload(function(p_url:String, p_path:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String, p_data:Dynamic):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String, p_data:Dynamic, p_binary:Bool):XMLHttpRequest{})
+	function create(p_url:String, p_path:String, p_event:String, p_data:Dynamic, p_binary:Bool, p_method:String):XMLHttpRequest;
+	
+	/**
+	 * Creates a GET XMLHttpRequest setup for sending notification data.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @return
+	 */
+	@:overload(function(p_url:String, p_path:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String, p_data:Dynamic):XMLHttpRequest { } )	
+	function get(p_url:String, p_path:String, p_event:String, p_data:Dynamic, p_binary:Bool):XMLHttpRequest;
+	
+	/**
+	 * Creates a POST XMLHttpRequest setup for sending notification data.
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @return
+	 */
+	@:overload(function(p_url:String, p_path:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String, p_data:Dynamic):XMLHttpRequest { } )	
+	function post(p_url:String, p_path:String, p_event:String, p_data:Dynamic, p_binary:Bool):XMLHttpRequest;
+	
+	/**
+	 * Creates a XMLHttpRequest setup for sending notification data to the default 'service' variable.
+	 * Defaults to POST
+	 * @param	p_url
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_data
+	 * @param	p_binary
+	 * @return
+	 */
+	@:overload(function(p_url:String, p_path:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String):XMLHttpRequest{})
+	@:overload(function(p_url:String, p_path:String, p_event:String, p_data:Dynamic,p_binary:Bool):XMLHttpRequest { } )	
+	function notify(p_path:String, p_event:String, p_data:Dynamic, p_binary:Bool,p_method:String):XMLHttpRequest;	
+}
+
+/**
  * Controller manager class.
  * @author Eduardo Pons - eduardo@thelaborat.org
  */
@@ -59,6 +130,11 @@ extern class Controller
 	 * List of active controllers.
 	 */
 	var list : Array<Dynamic>;
+	
+	/**
+	 * Request manager instance.
+	 */
+	var request : ControllerRequest;
 	
 	/**
 	 * Adds a controller instance.

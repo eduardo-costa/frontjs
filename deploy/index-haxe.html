@@ -31,14 +31,22 @@
 				<textarea view="textarea">
 					Some Text
 				</textarea>
-			</div>			
+			</div>
 		</div>
 		
 	</section>
 	<section view="contact">
 		
-		<div view="form">
-			
+		<div view="form" model="contact.form">
+			<div><span>URL</span><input type="text" view="url"/></div>
+			<select view="method">
+				<option>get</option>
+				<option>post</option>					
+			</select>
+			<button view="send">Send</button>
+			<pre view="output">
+				
+			</pre>
 		</div>
 		
 	</section>

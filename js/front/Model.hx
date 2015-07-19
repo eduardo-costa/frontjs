@@ -56,6 +56,8 @@ extern class Model
 	 * @param	p_value
 	 * @return
 	 */
+	@:overload(function(p_target:String):Dynamic{})
+	@:overload(function(p_target:String, p_value:Dynamic):Dynamic{})
 	@:overload(function(p_target:Element):Dynamic{})
 	function value(p_target:Element, p_value:Dynamic):Dynamic;
 	

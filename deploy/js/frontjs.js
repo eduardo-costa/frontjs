@@ -111,11 +111,19 @@ var Front =
 		Get or Set the value of the target element.
 		//*/
 		value: function(p_target,p_value)
-		{
+		{		
+			var fjs = Front;
 			var t   = p_target;
+			
+			if(typeof(t)=="string")
+			{
+				t = fjs.view.get(t);
+				if(t==null) return null;
+			}
+			
 			var tn  = t.nodeName.toLowerCase();
 			if(tn==null) 	return p_value;
-			if(tn=="#text") return p_value;					
+			if(tn=="#text") return p_value;
 			var itp = tn=="input" ? (t.type==null ? "" : t.type.toLowerCase()) : "";			
 			switch(tn)
 			{
@@ -187,7 +195,8 @@ var Front =
 			if(ref.list.indexOf(t) < 0) ref.list.push(t);			
 			t.route = t.route==null ? (p_route==null ? /(.*?)/ : p_route) : t.route;
 			if(t.allow==null) t.allow="";
-			if(t.allow=="") t.allow = "click,change,input,model";
+			//if(t.allow=="") t.allow = "click,change,input,model";
+			return t;
 		},
 		
 		/**
@@ -198,7 +207,8 @@ var Front =
 			var ref = this;
 			var t = p_target;
 			var pos = ref.list.indexOf(t);
-			if(pos >= 0) ref.list.splice(pos,1);
+			if(pos >= 0) { ref.list.splice(pos,1); return t; }
+			return null;
 		},
 		
 		
@@ -225,17 +235,7 @@ var Front =
 			var fjs = Front;
 			var ref = this;			
 			var vpth = fjs.view.path(p_target,true);			
-			for(var i=0;i< ref.list.length;i++)
-			{
-				var c = ref.list[i];								
-				if(c.on != null)
-				{
-					//Event do not belongs to this controller permited.
-					if(c.allow != null) if(c.allow!="") if(c.allow.indexOf(p_event)<0) continue;
-					if(vpth!="") if(!c.route.test(vpth)) continue;
-					c.on(vpth,p_event,p_target,p_data);
-				}
-			}
+			ref.notify(vpth,p_event,p_target,p_data);
 			
 			//Check 'bind' Elements.
 			if(("input,change,update").indexOf(p_event)>=0)
@@ -253,6 +253,127 @@ var Front =
 					fjs.model.value(n,d[f]);
 				});			
 			}
+		},
+		
+		/**
+		Propagates a notification to all controllers.
+		//*/
+		notify: function(p_path,p_event,p_target,p_data)
+		{
+			var fjs = Front;
+			var ref = this;	
+			
+			for(var i=0;i< ref.list.length;i++)
+			{
+				var c = ref.list[i];								
+				if(c.on != null)
+				{
+					//Event do not belongs to this controller permited.
+					if(c.allow != null) if(c.allow!="") if(c.allow.indexOf(p_event)<0) continue;
+					if(p_path!="") if(!c.route.test(p_path)) continue;
+					c.on(p_path,p_event,p_target,p_data);
+				}
+			}
+		},
+		
+		/**
+		Wrapper for XMLHttpRequest features.
+		//*/
+		request:
+		{
+			/**
+			URL for the default notification webservice.
+			//*/
+			service: "",
+			
+			/**
+			Creates a XMLHttpRequest passing the notification data to it.
+			//*/
+			create: function(p_url,p_path,p_event,p_data,p_binary,p_method)
+			{
+				var method = p_method==null ? "get" : p_method;
+				var binary = p_binary==null ? false : p_binary;			
+				var ctrl = Front.controller;
+				var fjs = Front;
+				var n   = {};			
+				n.path  = p_path;
+				n.event = p_event==null ? "" : p_event;
+				n.data  = p_data==null ? {} : p_data;				
+				if(method=="get")
+				{
+					var qs = "?notification="+JSON.stringify(n);
+					p_url+=qs;
+				}
+				
+				var req =				
+				fjs.request.create(p_url,function(d,p,x,err)
+				{
+					
+					if(p<=1.0) ctrl.notify(p_path+".progress","progress",x,p);
+					if(p>=1.0)
+					{
+						if(d==null)
+						{
+							ctrl.notify(p_path+".error","error",x,err);
+						}
+						else
+						{							
+							ctrl.notify(p_path+".complete","complete",x,x.response);
+							if(!binary)
+							{
+								var nl = JSON.parse(x.response);
+								if(nl == null) { console.error("Controller> Service ["+p_url+"] returned a wrong notification list."); return; }								
+								for(var i=0; i<nl.length;i++)
+								{
+									var n = nl[i];
+									if(n.path==null)
+									{
+										console.error("Controller> Service ["+p_url+"] returned a wrong notification format.");
+									}
+									else
+									{
+										
+										n.event = n.event==null ? "" : n.event;
+										n.data  = n.data==null ? {} : n.data;
+										ctrl.notify(n.path,n.event,x,n.data);
+									}
+								}								
+							}
+						}						
+					}					
+				},JSON.stringify(n),binary,method);
+				return req;
+			},
+			
+			/**
+			Wrapper for a GET request that returns a notification formatted reponse.
+			//*/
+			get: function(p_url,p_path,p_event,p_data,p_binary)
+			{
+				var ref = this;
+				return ref.create(p_url,p_path,p_event,p_data,p_binary,"get");
+			},
+			
+			/**
+			Wrapper for a POST request.
+			//*/
+			post: function(p_url,p_path,p_event,p_data,p_binary)
+			{
+				var ref = this;
+				return ref.create(p_url,p_path,p_event,p_data,p_binary,"post");
+			},
+			
+			/**
+			Creates a request to the default service and sends a notification.
+			Default to POST.
+			//*/
+			notify: function(p_path,p_event,p_data,p_binary,p_method)
+			{
+				var ref = this;
+				var method = p_method==null ? "post" : p_method;
+				return ref.create(ref.service,p_path,p_event,p_data,p_binary,method);
+			}
+			
 		},
 		
 		/**
@@ -623,6 +744,73 @@ var Front =
 		var l = n.children;
 		for(var i=0;i<l.length;i++) ref.traverse(l[i],cb);
 	},
+	
+	/**
+	class that handles XMLHttpRequest related functionalities.
+	//*/
+	request:
+	{
+		/**
+		Wrapper for a XMLHttpRequest. Accepts a callback that receives (data,progress,xhr,error).
+		//*/
+		create: function(p_url,p_callback,p_data,p_binary,p_method)
+		{
+			var method = p_method==null ? "get" : p_method;
+			var binary = p_binary==null ? false : p_binary;		
+			var ref = this;
+			var ld = new XMLHttpRequest();		
+			if (ld.overrideMimeType != null) {  ld.overrideMimeType(binary ? "application/octet-stream" : "text/plain");  }			
+			ld.onprogress = function(e) 
+			{
+				var p = (e.total <= 0? 0 : e.loaded / (e.total + 5)) * 0.9999;
+				if(p_callback!=null) p_callback(null,p,ld);
+			};
+			ld.onload = function(e1) { if(p_callback!=null) p_callback(ld.response,1.0,ld); };
+			ld.onerror = function(e2){ if(p_callback!=null) p_callback(null,1.0,ld,e2); };			
+			ld.open(method,p_url,true);
+			if(p_data != null)
+			{				
+				ld.send(p_data);
+			}
+			else
+			{
+				ld.send();
+			}
+			return ld;
+		},
+		
+		/**
+		Creates a GET request.
+		//*/
+		get: function(p_url,p_callback,p_data,p_binary)
+		{
+			var ref = this;
+			var d  = p_data;			
+			if(d != null)
+			{
+				var qs = "?";
+				var kl = [];
+				for(var k in d) kl.push(k+"="+d[k]);
+				for(var i=0;i<kl.length;i++)
+				{					
+					qs += kl[i];
+					if(i<(kl.length-1)) qs+="&";
+				}
+				p_url+=qs;
+			}
+			return ref.create(p_url,p_callback,null,p_binary,"get");
+		},
+		
+		/**
+		Creates a POST request.
+		//*/
+		post: function(p_url,p_callback,p_data,p_binary)
+		{			
+			return ref.create(p_url,p_callback,p_data,p_binary,"post");
+		},
+	}
+	
+	
 };
 
 

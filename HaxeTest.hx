@@ -11,20 +11,36 @@ class SimpleController extends BaseController
 	override public function new(p_name:String):Void
 	{
 		super(p_name);
-		allow = "model,click";
-		
+		allow = "";		
 	}
 	
 	override public function on(p_path:String, p_event:String, p_target:Element, p_data:Dynamic):Void 
 	{
-		trace(">> " + p_event);
+		
 		switch(p_event)
 		{
 			case "model":
+				trace(p_path);
 				trace(p_data);		
 				
 			case "click":
 				trace(p_path);
+		}
+		
+		switch(p_path)
+		{
+			case "contact.form.send":			
+			var url : String = Front.model.data("contact.form").url;
+			var method: Int = Front.model.data("contact.form").method;
+			trace("send "+url);
+			Front.request.create(url, function(d:Dynamic, p:Float):Void
+			{
+				trace("@ " + d + " " + p);
+				if (p >= 1)
+				{
+					Front.model.value("contact.form.output", d);
+				}
+			},null,false,method==1 ? "post" : "get");
 		}
 		
 	}
@@ -47,8 +63,7 @@ class HaxeTest
 		
 		Browser.window.onload = function(p_event:Event):Void
 		{
-			Front.initialize();		
-			trace(Front.model.data("home.form"));			
+			Front.initialize();								
 			Front.model.watch("home.form", true);			
 			Front.controller.add(new SimpleController("simple"));
 		};
