@@ -63,7 +63,7 @@ Include the sources:
 
 ### Local
 ```html
-<!-- current -->
+<!-- full -->
 <script src="js/frontjs.js">
 <!-- minified -->
 <script src="js/frontjs.min.js">
@@ -71,6 +71,7 @@ Include the sources:
 
 ### CDN
 ```html
+<!-- Current Version -->
 <script src="http://cdn.thelaborat.org/frontjs/frontjs.js">
 <script src="http://cdn.thelaborat.org/frontjs/frontjs.min.js">
 
