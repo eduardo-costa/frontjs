@@ -63,6 +63,7 @@ Include the sources:
 
 ### Local
 ```html
+<!-- current -->
 <script src="js/frontjs.js">
 <!-- minified -->
 <script src="js/frontjs.min.js">
