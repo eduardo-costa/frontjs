@@ -322,7 +322,10 @@ The `Front.request` class allows for classic requests with any kind of data. In 
 var callback = 
 function(data,progress)
 {
-  if(progress<=1.0) { console.log("loading: "+(progress*100.0)); }
+  //During upload the progress goes from -1.0 to 0.0
+  if(progress < 0.0) { console.log("uploading: "+(1.0+progress)*100.0); }
+  
+  if(progress>=0) if(progress<=1.0) { console.log("loading: "+(progress*100.0)); }
   if(progress>=1.0)
   {
     if(data != null) 

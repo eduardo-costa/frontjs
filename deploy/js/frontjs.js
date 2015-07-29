@@ -309,7 +309,8 @@ var Front =
 				fjs.request.create(p_url,function(d,p,x,err)
 				{
 					
-					if(p<=1.0) ctrl.notify(p_path+".progress","progress",x,p);
+					if(p>=0) if(p<=1.0) ctrl.notify(p_path+".progress","progress",x,p);
+					if(p<0) ctrl.notify(p_path+".upload","progress",x,1.0+p);
 					if(p>=1.0)
 					{
 						if(d==null)
@@ -764,6 +765,15 @@ var Front =
 			{
 				var p = (e.total <= 0? 0 : e.loaded / (e.total + 5)) * 0.9999;
 				if(p_callback!=null) p_callback(null,p,ld);
+			};
+			ld.upload.onprogress = 
+			function(e) 
+			{
+				if(p_data!=null)
+				{
+					var p = (e.total <= 0? 0 : e.loaded / (e.total + 5)) * 0.9999;
+					if(p_callback!=null) p_callback(null,-(1.0-p),ld);
+				}
 			};
 			ld.onload = function(e1) { if(p_callback!=null) p_callback(ld.response,1.0,ld); };
 			ld.onerror = function(e2){ if(p_callback!=null) p_callback(null,1.0,ld,e2); };			
