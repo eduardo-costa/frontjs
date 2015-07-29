@@ -815,7 +815,8 @@ var Front =
 		Creates a POST request.
 		//*/
 		post: function(p_url,p_callback,p_data,p_binary)
-		{			
+		{	
+			var ref = this;
 			return ref.create(p_url,p_callback,p_data,p_binary,"post");
 		},
 	}
