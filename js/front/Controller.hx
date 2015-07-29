@@ -181,6 +181,16 @@ extern class Controller
 	@:overload(function(p_event:String,p_target:Element):Void{})
 	function dispatch(p_event:String, p_target:Element, p_data:Dynamic):Void;
 	
-	
+	/**
+	 * Sends a notification to all controllers.
+	 * @param	p_path
+	 * @param	p_event
+	 * @param	p_target
+	 * @param	p_data
+	 */
+	@:overload(function(p_path:String):Void{})
+	@:overload(function(p_path:String, p_event:String):Void{})
+	@:overload(function(p_path:String, p_event:String, p_target:Dynamic):Void { } )	
+	function notify(p_path:String, p_event:String, p_target:Dynamic, p_data:Dynamic):Void;
 	
 }
