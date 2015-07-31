@@ -880,8 +880,13 @@ var Front =
 			var method = p_method==null ? "get" : p_method;
 			var binary = p_binary==null ? false : p_binary;		
 			var ref = this;
-			var ld = new XMLHttpRequest();		
-			if (ld.overrideMimeType != null) {  ld.overrideMimeType(binary ? "application/octet-stream" : "text/plain");  }			
+			var ld = new XMLHttpRequest();					
+			if(binary)
+			{
+				if (ld.overrideMimeType != null) {  ld.overrideMimeType("application/octet-stream");  }			
+				ld.responseType = "arraybuffer";
+			}
+			
 			ld.onprogress = function(e) 
 			{
 				var p = (e.total <= 0? 0 : e.loaded / (e.total + 5)) * 0.9999;
