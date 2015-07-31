@@ -399,7 +399,44 @@ Front.controller.request.notify("some.path","my-event",{a:"hello", b:1});
 Front.controller.request.notify("other.path","other-event",{a:"hi!", b:2});
 ```
 
+### Storage
 
+The storage features internally uses the `localforage` library by Mozilla [https://github.com/mozilla/localForage].
+It uses the `IndexedDB` API to store and retrieve values.
 
+#### Front
+The usage with the `Front` class is pretty similar to `localforage`.
+Just check the methods signatures for small differences in names.  
 
+```javascript
+Front.storage.init("MyDatabaseName"); //Init the database with your custom name. Defaults to "frontjs".
+console.log(Front.storage.database);  //MyDatabaseName
+
+Front.storage.context = "myapp";      //Storage context. Can be used to add values only related to a given application. Defaults to "fjs"
+
+// Sets the Number in the 'key0' slot inside the DB. 
+// Wait for the 'callback' for confirmation. 
+// Check Mozilla's doc for the complete list of accepted data
+Front.storage.set("key0", 0, callback);    
+Front.storage.set("key1", 1, callback);
+Front.storage.set("key2", 2, callback);
+
+Front.storage.get("key2",function(v,err) { console.log(v); }); //2
+
+//Returns the count of key-values for the current context.
+Front.storage.length(function(count,err){ console.log(count); }); //3
+
+Front.keys(function(list,err) { console.log(list); }); //["key0","key1","key2"]
+
+Front.clear(function(count,err){}); //Removes all key-values from the current Front.context
+Front.destroy(function(err){});     //Removes all key-values from all context and outside FrontJS
+```
+
+#### Model
+The `Model`storage features are pratically the same of `Front`.
+The difference is that, instead of `callback`, users must pass a `notification` string and optionally a `data`.
+
+```javascript
+Front.storage.get("key2","samplekey",10); //switch(path) { case "samplekey.get": console.log(data); //[2,10] }
+```
 

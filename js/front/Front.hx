@@ -1,4 +1,5 @@
 package js.front;
+import haxe.io.Error;
 import js.html.Element;
 import js.html.Image;
 import js.html.ImageElement;
@@ -72,6 +73,84 @@ extern class FrontRequest
 }
 
 /**
+ * Class that describes the storage features of FrontJS.
+ */
+extern class FrontStorage
+{
+	/**
+	String to be used before keys to avoid key collision between different applications.
+	//*/
+	var context : String;
+	
+	/**
+	Chosen name for the database.
+	//*/
+	var database : String;
+	
+	/**
+	Initializes the storage with custom information.
+	/**/
+	@:overload(function():Void{})
+	function init(p_name:String):Void;
+		
+	/**
+	Retrieves a data from LocalForage.
+	//*/	
+	@:overload(function(p_key:String,p_callback:Dynamic->Void):Void{})
+	function get(p_key:String, p_callback:Dynamic->Error->Void):Void;
+	
+	/**
+	Stores a data into LocalForage.
+	//*/
+	@:overload(function(p_key:String,p_value:Dynamic):Void{})
+	@:overload(function(p_key:String,p_value:Dynamic,p_callback:Dynamic->Void):Void{})
+	function set(p_key:String, p_value:Dynamic, p_callback:Dynamic->Error->Void):Void;
+	
+	/**
+	Retrieves a data from LocalForage.
+	//*/
+	@:overload(function (p_key : String):Void{})
+	@:overload(function (p_key : String,p_callback:Dynamic->Void):Void{})
+	function remove(p_key : String, p_callback:Dynamic->Error->Void):Void;
+	
+	/**
+	Returns the Key Id based on its name.
+	//*/	
+	@:overload(function (p_id:Int, p_callback:String->Void):Void{})
+	function key(p_id:Int, p_callback:String->Error->Void):Void;
+	
+	/**
+	Recovers the keys related to the context. If the context if empty, returns all keys.
+	//*/
+	@:overload(function (p_callback:Array<String>->Void):Void{})
+	function keys(p_callback:Array<String>->Error->Void):Void;
+	
+	/**
+	Removes all keys of this context. If the context is empty all data will be excluded.
+	//*/
+	@:overload(function (p_callback:Int->Void):Void{})
+	function clear(p_callback:Int->Error->Void):Void;
+	
+	/**
+	Returns the length of this storage based on the current context.
+	//*/
+	@:overload(function (p_callback:Int->Void):Void{})
+	function length(p_callback:Int->Error->Void):Void;
+	
+	/**
+	Iterates all key-value pairs from this storaged context.
+	//*/
+	@:overload(function(p_callback:String->Dynamic):Void {})
+	function iterate(p_callback:String->Dynamic->Int):Void;
+	
+	/**
+	Removes ALL data from the IndexedDB system.
+	//*/	
+	@:overload(function (p_callback:Void->Void):Void{})
+	function destroy(p_callback:Error->Void):Void;
+}
+
+/**
  * Class that represents a WebBundle instance.
  * @author Eduardo Pons - eduardo@thelaborat.org
  */
@@ -123,6 +202,11 @@ extern class Front
 	 * Reference to the XMLHttpRequest handler.
 	 */
 	static var request : FrontRequest;
+	
+	/**
+	 * Reference to the storage system.
+	 */
+	static var storage : FrontStorage;
 	
 	/**
 	 * Initializes the front-end informing the root Element and initial set of events.
