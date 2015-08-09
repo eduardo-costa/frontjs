@@ -8,6 +8,24 @@ import js.html.Element;
  */
 extern class View extends Element implements Dynamic<Dynamic>
 {	
+	/**
+	 * Returns this element parent converted to view.
+	 */
+	public var parent(get, never):View;
+	private inline function get_parent():View { return cast this.parentElement; }
+	
+	/**
+	 * Returns this view attribute by its name.
+	 * @param	p_v
+	 * @return
+	 */
+	public inline function attribute(p_k:String, p_v:String = ""):String 
+	{ 
+		if (p_v == "") return this.hasAttribute(p_k) ? this.getAttribute(p_k) : "";
+		if (p_v == null) { if (this.hasAttribute(p_k)) this.removeAttribute(p_k); return ""; }
+		this.setAttribute(p_k, p_v);
+		return p_v;
+	}
 	
 	/**
 	 * Get/Set the 'view' atribute of this Element.
@@ -15,12 +33,6 @@ extern class View extends Element implements Dynamic<Dynamic>
 	public var name(get, set):String;
 	private inline function get_name():String { return this.attribute("view"); }
 	private inline function set_name(v:String):String { this.attribute("view", v); return v; }
-	
-	/**
-	 * Returns this element parent converted to view.
-	 */
-	public var parent(get, never):View;
-	private inline function get_parent():View { return cast this.parentElement; }
 	
 	/**
 	 * Returns a flag indicating this element is visible.
@@ -128,19 +140,6 @@ extern class View extends Element implements Dynamic<Dynamic>
 	 * @return
 	 */
 	public inline function child(p_index:Int):View { return cast this.children[p_index]; }
-	
-	/**
-	 * Returns this view attribute by its name.
-	 * @param	p_v
-	 * @return
-	 */
-	public inline function attribute(p_k:String, p_v:String = ""):String 
-	{ 
-		if (p_v == "") return this.hasAttribute(p_v) ? this.getAttribute(p_v) : "";
-		if (p_v == null) { if (this.hasAttribute(p_k)) this.removeAttribute(p_k); return ""; }
-		this.setAttribute(p_k, p_v);
-		return p_v;
-	}
 	
 	/**
 	 * Number of child elements.
