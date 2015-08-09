@@ -15,6 +15,12 @@ extern class View extends Element implements Dynamic<Dynamic>
 	private inline function get_parent():View { return cast this.parentElement; }
 	
 	/**
+	 * Flag that indicates this element was added in the hierarchy.
+	 */
+	public var added(get, never):Bool;
+	private inline function get_added():Bool { return (this.parentElement != null); }
+	
+	/**
 	 * Returns this view attribute by its name.
 	 * @param	p_v
 	 * @return
@@ -57,7 +63,7 @@ extern class View extends Element implements Dynamic<Dynamic>
 	public inline function insert(p_view:View,p_index:Int):View
 	{	
 		var p : Int = p_index<0 ? 0 : (p_index > this.children.length ? (this.children.length) : p_index);
-		if (p_view.parentElement != this) p_view.parentElement.removeChild(p_view);
+		if (p_view.parentElement != this) if(p_view.added) p_view.parentElement.removeChild(p_view);
 		if(p>=this.children.length) this.appendChild(p_view) else this.insertBefore(p_view, this.children[p]);
 		return p_view;
 	}
@@ -76,6 +82,8 @@ extern class View extends Element implements Dynamic<Dynamic>
 	 */
 	public inline function swap(p_a:View, p_b:View):Void
 	{
+		if (p_a.parentElement == null) return;
+		if (p_b.parentElement == null) return;
 		if (p_a.parentElement != this) return;
 		if (p_b.parentElement != this) return;
 		this.insertBefore(p_b,p_a);
@@ -105,7 +113,7 @@ extern class View extends Element implements Dynamic<Dynamic>
 	 * @param	p_a
 	 * @return
 	 */
-	public inline function stepFront(p_a:View):View { if (p_a.parentElement != this) return p_a; if (p_a.nextElementSibling != null) this.swap(p_a, cast p_a.nextElementSibling); return p_a;	}
+	public inline function stepFront(p_a:View):View { if (!p_a.added) return p_a; if (p_a.parentElement != this) return p_a; if (p_a.nextElementSibling != null) this.swap(p_a, cast p_a.nextElementSibling); return p_a;	}
 	
 	/**
 	 * Sends a given child to the back of the hierarchy.
@@ -119,7 +127,7 @@ extern class View extends Element implements Dynamic<Dynamic>
 	 * @param	p_a
 	 * @return
 	 */
-	public inline function stepBack(p_a:View):View { if (p_a.parentElement != this) return p_a; if (p_a.previousElementSibling != null) this.swap(p_a, cast p_a.previousElementSibling); return p_a;	}
+	public inline function stepBack(p_a:View):View { if (!p_a.added) return p_a; if (p_a.parentElement != this) return p_a; if (p_a.previousElementSibling != null) this.swap(p_a, cast p_a.previousElementSibling); return p_a;	}
 	
 	/**
 	 * Returns this element's index position in the hierarchy.
@@ -132,7 +140,7 @@ extern class View extends Element implements Dynamic<Dynamic>
 		while (n != null) { n = cast n.previousElementSibling; k++; }
 		return k;
 	}
-	private inline function set_index(v:Int):Int { parent.removeChild(this); parent.insert(this, v); return this.index; }
+	private inline function set_index(v:Int):Int { if (!this.added) return v; parent.removeChild(this); parent.insert(this, v); return this.index; }
 	
 	/**
 	 * Returns this View children as View.
