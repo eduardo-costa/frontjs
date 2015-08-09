@@ -10,6 +10,13 @@ extern class View extends Element implements Dynamic<Dynamic>
 {	
 	
 	/**
+	 * Get/Set the 'view' atribute of this Element.
+	 */
+	public var name(get, set):String;
+	private inline function get_name():String { return this.attribute("view"); }
+	private inline function set_name(v:String):String { this.attribute("view", v); return v; }
+	
+	/**
 	 * Returns this element parent converted to view.
 	 */
 	public var parent(get, never):View;
