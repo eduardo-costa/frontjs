@@ -186,17 +186,17 @@ extern class Front
 	/**
 	 * Reference to the Model manager.
 	 */
-	static var model : Model;
+	static var model : FrontModel;
 	
 	/**
 	 * Reference to the View manager.
 	 */
-	static var view : View;
+	static var view : FrontView;
 	
 	/**
 	 * Reference to the Controller manager.
 	 */
-	static var controller : Controller;
+	static var controller : FrontController;
 	
 	/**
 	 * Reference to the XMLHttpRequest handler.
@@ -209,13 +209,24 @@ extern class Front
 	static var storage : FrontStorage;
 	
 	/**
-	 * Initializes the front-end informing the root Element and initial set of events.
+	 * Reference to the Activity functionality.
+	 */
+	static var activity : FrontActivity;
+	
+	/**
+	 * Reference to the Activity functionality.
+	 */
+	static var animation : FrontAnimation;
+	
+	/**
+	 * Initializes the front-end informing the root Element, initial set of events and a flag allowing or not mutation events.
 	 * @param	p_root
 	 * @param	p_events
 	 */
 	@:overload(function():Void { })	
-	@:overload(function(p_root:Element):Void { })	
-	static function initialize(p_root:Element, p_events:Array<String>):Void;
+	@:overload(function(p_root:Element):Void { } )
+	@:overload(function(p_root:Element,p_events:Array<String>):Void { })
+	static function initialize(p_root:Element, p_events:Array<String>,p_allow_mutation:Bool):Void;
 	
 	/**
 	 * Sets the event handling root element.
@@ -239,6 +250,13 @@ extern class Front
 	 */
 	@:overload(function(p_attribute:String, p_value:String):Element{})
 	static function find(p_attribute:String, p_value:String,p_from:Element):Element;
+	
+	/**
+	 * Searches all HTML using the specified 'query'.
+	 * @param	p_query
+	 * @return
+	 */	
+	static function query(p_query:String):Array<Dynamic>;
 	
 	/**
 	 * Traverses the DOM hierarchy of the informed Element, calling 'callback' on each visit, including the element itself.

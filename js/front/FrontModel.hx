@@ -63,7 +63,7 @@ extern class ModelStorage
  * Model manager class.
  * @author Eduardo Pons - eduardo@thelaborat.org
  */
-extern class Model
+extern class FrontModel
 {
 	/**
 	 * Reference to the storage features notification oriented.

@@ -5,25 +5,25 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var js_front_BaseController = function(p_name,p_allow,p_route) {
+var js_front_mvc_Controller = function(p_name,p_allow,p_route) {
 	this.name = Type.getClassName(js_Boot.getClass(this));
 	if(p_name != null) this.name = p_name;
 	if(p_allow != null) this.allow = p_allow;
 	if(p_route != null) this.route = new RegExp(p_route);
 };
-js_front_BaseController.__name__ = ["js","front","BaseController"];
-js_front_BaseController.prototype = {
+js_front_mvc_Controller.__name__ = ["js","front","mvc","Controller"];
+js_front_mvc_Controller.prototype = {
 	on: function(p_path,p_event,p_target,p_data) {
 	}
-	,__class__: js_front_BaseController
+	,__class__: js_front_mvc_Controller
 };
 var SimpleController = function(p_name) {
-	js_front_BaseController.call(this,p_name);
+	js_front_mvc_Controller.call(this,p_name);
 	this.allow = "";
 };
 SimpleController.__name__ = ["SimpleController"];
-SimpleController.__super__ = js_front_BaseController;
-SimpleController.prototype = $extend(js_front_BaseController.prototype,{
+SimpleController.__super__ = js_front_mvc_Controller;
+SimpleController.prototype = $extend(js_front_mvc_Controller.prototype,{
 	on: function(p_path,p_event,p_target,p_data) {
 		switch(p_event) {
 		case "model":
@@ -56,6 +56,28 @@ HaxeTest.main = function() {
 		Front.initialize();
 		Front.model.watch("home.form",true);
 		Front.controller.add(new SimpleController("simple"));
+		var c = Front.view.get("home.content");
+		var f = c.children[0];
+		haxe_Timer.delay(function() {
+			var _this = f.children[0];
+			var v = 0.5;
+			if(v >= 1.0) v = 1.0; else if(v <= 0.0) v = 0.0; else v = v;
+			if(v >= 1.0) _this.style.opacity = ""; else _this.style.opacity = v + "";
+			v;
+			console.log((function($this) {
+				var $r;
+				var _this1 = f.children[0];
+				$r = _this1.style.opacity == ""?1.0:parseFloat(_this1.style.opacity);
+				return $r;
+			}(this)));
+		},2000);
+		haxe_Timer.delay(function() {
+			var _this2 = f.children[0];
+			var v1 = 1.0;
+			if(v1 >= 1.0) v1 = 1.0; else if(v1 <= 0.0) v1 = 0.0; else v1 = v1;
+			if(v1 >= 1.0) _this2.style.opacity = ""; else _this2.style.opacity = v1 + "";
+			v1;
+		},4000);
 	};
 };
 Math.__name__ = ["Math"];
@@ -70,6 +92,31 @@ Type.getClassName = function(c) {
 	var a = c.__name__;
 	if(a == null) return null;
 	return a.join(".");
+};
+var haxe_Timer = function(time_ms) {
+	var me = this;
+	this.id = setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe_Timer.__name__ = ["haxe","Timer"];
+haxe_Timer.delay = function(f,time_ms) {
+	var t = new haxe_Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+};
+haxe_Timer.prototype = {
+	stop: function() {
+		if(this.id == null) return;
+		clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe_Timer
 };
 var js_Boot = function() { };
 js_Boot.__name__ = ["js","Boot"];

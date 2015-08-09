@@ -1,12 +1,14 @@
 package;
+import haxe.Timer;
 import js.Browser;
-import js.front.Controller.BaseController;
 import js.front.Front;
+import js.front.mvc.Controller;
+import js.front.mvc.View;
 import js.html.Element;
 import js.html.Event;
 import js.html.Image;
 
-class SimpleController extends BaseController
+class SimpleController extends Controller
 {
 	override public function new(p_name:String):Void
 	{
@@ -66,6 +68,8 @@ class HaxeTest
 			Front.initialize();								
 			Front.model.watch("home.form", true);			
 			Front.controller.add(new SimpleController("simple"));
+			
+			
 		};
 		
 	}
