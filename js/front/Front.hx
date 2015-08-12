@@ -1,5 +1,5 @@
 package js.front;
-import haxe.io.Error;
+import js.Error;
 import js.html.Element;
 import js.html.Image;
 import js.html.ImageElement;
