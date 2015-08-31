@@ -434,9 +434,20 @@ Front.destroy(function(err){});     //Removes all key-values from all context an
 
 #### Model
 The `Model`storage features are pratically the same of `Front`.
-The difference is that, instead of `callback`, users must pass a `notification` string and optionally a `data`.
+The difference is that, instead of `callback`, users must pass a `notification` string and optionally extra `data`.
 
 ```javascript
-Front.storage.get("key2","samplekey",10); //switch(path) { case "samplekey.get": console.log(data); //[2,10] }
+Front.model.storage.get("key2","samplekey",10); //(key,path,extra-data)
+
+Front.controller.add(
+{
+  on: function(path,event,target,data)
+  {
+    switch(path)
+    {
+      case "samplekey.get": console.log(data); break; //[2,10]
+    }
+  },
+});
 ```
 
