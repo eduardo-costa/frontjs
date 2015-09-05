@@ -256,7 +256,7 @@ Views are useful to store the reference for important elements in the DOM.
 ```
 
 ```javascript
-//Will search an Element with model="some.model.attrib"
+//Will search an Element matching the view path "content.form"
 var div = Front.view.get("content.form");
 ```
 
