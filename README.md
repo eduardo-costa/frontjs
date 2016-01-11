@@ -30,11 +30,17 @@ Front.controller.add("home",
   allow: "click,input",
   
   //Notification Handler
-  on: function(view,target)
+  on: function(e)
   {
-    //handle all events in 'allow'
-    //filter by "view@event"
-    switch(view)
+    //handle all events in 'allow'	
+    
+	//e.type   == 'input' || 'click'
+	//e.view   == 'path.to.view'
+	//e.target == DOM Element
+	//e.path   == 'path.to.view@input' || 'path.to.view@click'
+	//e.data   == null || {some-model-data}
+	
+    switch(e.path)
     {
       case "home.content@input": break;
       case "home.footer@click": break;
@@ -46,7 +52,7 @@ Front.controller.add("home",
 Front.controller.add("gallery"
 {  
   allow: "click,input,change",
-  on: function(view,target)
+  on: function(e)
   {
 	  /*...*/
   }
@@ -124,11 +130,8 @@ var simple_controller =
 {	
 	//Allowed events. default="" and accepts all events.	
 	var allow: "click,focus,model",
-	//'on' callback
-	//view   = String with the path and event of the View which triggered it. view == 'path.to.view@event'	
-	//target = event.target
-	//data   = Model data when 'model' event or if informed in Front.model.dispatch call (defaults to null)
-	var on: function(view,target,data) { }
+	//'on' callback	
+	var on: function(e) { }
 };
 Front.controller.add("path.to.view",simple_controller);
 ```
@@ -187,9 +190,9 @@ Front.model.watch("some.model",true);
 
 Front.controller.add(
 {
-	on: function(view,target,data)
+	on: function(e)
 	{
-		if(view=="some.model@model")		
+		if(e.path=="some.model@model")		
 		{
 			console.log(p_data);
 		}
@@ -243,7 +246,7 @@ It is possible to transfer changes in model elements to other parts of the DOM.
 ```
 
 Everytime `content.form.name` changes, the new value will be applied on the `<p>` Element marked with the `bind` attribute.
-The syntax for the `bind` attribute is `[path.to.view].[view-attrib]`
+The syntax for the `bind` attribute is `[path.to.view]`
 
 ### Request  
 The `XMLHttpRequest` features allow easy and fast creation of http requests. It is possible to create custom ones or use the `get`and `post` shortcuts.  
@@ -295,13 +298,13 @@ Then in the HTML.
 ```javascript
 var some_ctrl = 
 {
-  on: function(path,event,target,data)
+  on: function(e)
   {
-    switch(path)
+    switch(e.path)
     {
-      case "some.path.progress": console.log("progress: "+data); break;
-      case "some.path.error":    console.log("error: "+data);    break;
-      case "some.path.complete": console.log("complete: "+data); break;
+      case "some.path@progress": console.log("progress: "+data); break;
+      case "some.path@error":    console.log("error: "+data);    break;
+      case "some.path@complete": console.log("complete: "+data); break;
       case "service.result":
         console.log(event,data.a,data.b);
         break;
@@ -373,11 +376,11 @@ Front.model.storage.get("key2","samplekey",10); //(key,path,extra-data)
 
 Front.controller.add(
 {
-  on: function(path,event,target,data)
+  on: function(e)
   {
-    switch(path)
+    switch(e.path)
     {
-      case "samplekey.get": console.log(data); break; //[2,10]
+      case "samplekey@get": console.log(data); break; //[2,10]
     }
   },
 });
