@@ -137,8 +137,6 @@ Front.controller.add("path.to.view",simple_controller);
 ```
 The created controller will have its `on` method called if the event type matches `simple_controller.allow` and if it originates from within the chosen **View**.
 
-### Haxe
-
 ## Model
 
 The **Model** attribute of the `Front` class is responsible by handling data inside the DOM.  
@@ -158,7 +156,7 @@ Given:
 var obj = Front.model.get("some.model.attrib");
 ```
 
-All Elements inside it with the `view` attribute will have their data sampled and returned in the resulting object.
+All Elements inside the sampled `path.to.view` will have its contents returned as an object.  
 
 ```html
 <div :container>
