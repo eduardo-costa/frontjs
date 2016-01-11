@@ -1,17 +1,21 @@
-# FrontJS  
+# FrontJS  1.0
 
-Clean and Fast MVC for your Front-End app. Plug and Play your controller classes with the smallest code footprint.
+Clean and Fast MVC for your Front-End app.  
+* Name your Views  
+* Add your Controllers  
+* Sample your Models  
+
 ```html
-<div view="home">
-  <div view="content">
+<div :home>
+  <div :content>
   </div>
-  <div view="footer">
+  <div :footer>
   </div>
 </div>
-<div view="gallery">
-  <div view="header">
+<div :gallery>
+  <div :header>
   </div>
-  <div view="pages">
+  <div :pages>
   </div>
 </div>
 ```
@@ -20,41 +24,36 @@ Clean and Fast MVC for your Front-End app. Plug and Play your controller classes
 Front.initialize();
 
 //Home event controller
-Front.controller.add(
-{
-  //RegExp of the chosen view route or null if capture all.
-  route: /home./, 
+Front.controller.add("home",
+{  
   //Allowed events
   allow: "click,input",
-  on: function(path,type,target)
+  
+  //Notification Handler
+  on: function(view,target)
   {
     //handle all events in 'allow'
-    //filter by view 'path' or 'type'
-    switch(path)
+    //filter by "view@event"
+    switch(view)
     {
-      case "home.content": break;
-      case "home.footer": break;
+      case "home.content@input": break;
+      case "home.footer@click": break;
     }
   }
 });
 
 //Gallery event controller
-Front.controller.add(
-{
-  route: /gallery./,
+Front.controller.add("gallery"
+{  
   allow: "click,input,change",
-  on: function(path,ev,target)
+  on: function(view,target)
   {
-  
+	  /*...*/
   }
 });
 ```
 
 # Example
-
-Simple example, showing controllers and examples.
-http://codepen.io/eduardo_costa/pen/pJLoKd
-
 
 # Install 
 
@@ -76,148 +75,104 @@ Include the sources:
 <script src="http://cdn.thelaborat.org/frontjs/frontjs.min.js">
 
 <!-- Custom Version -->
-<script src="http://cdn.thelaborat.org/frontjs/0.4.0/frontjs.js">
-<script src="http://cdn.thelaborat.org/frontjs/0.4.0/frontjs.min.js">
+<script src="http://cdn.thelaborat.org/frontjs/1.0.0/frontjs.js">
+<script src="http://cdn.thelaborat.org/frontjs/1.0.0/frontjs.min.js">
 ```
 
 
 ## Haxe
-
-* Add the `js` sources on your HTML page.
-* Install the `fronthx` library:
-```CLI
-haxelib git fronthx https://github.com/eduardo-costa/frontjs
-```  
-Include the library when compiling:  
-
-```CLI
-haxe ... -lib fronthx ...
-```
-Include the references on your Haxe source.
-```haxe
-import js.front.Front;
-```
 
 # Usage
 
 ## Initialization
 
 ### HTML
-First mark in the HTML whose elements will be **Views** and/or **Models**
+First mark in the HTML whose elements will be a **View**.  
+Allowed **name** attribute:
+* `<div attrib0="a0" attrib1="a1" ... :view-name></div>`
+* `<div attrib0="a0" attrib1="a1" ... name="view-name"></div>`
+* `<div attrib0="a0" attrib1="a1" ... data-name="view-name"></div>`
 
 ```html
-<div view="content" model="app.model">
-	<div view="form">
-		<input type="text" view="name">
+<div :content>
+	<div :form>
+		<input type="text" :name>
 	</div>
 </div>
 ```
 
 ### Javascript
 
-The `Front` global object gives access to all MVC elements and other utility functions.
-Be sure to initialize `Front` before using it.
+The `Front` global object gives access to all MVC elements and other utility functions.  
+Be sure to initialize `Front` before using it.  
 
 ```javascript
-//root_element   -> defaults to document.body
 //default_events -> defaults to ["input","change","click"]
-Front.initialize([root_element],[default_events]); 
+Front.initialize([default_events]); 
 ```
 
 ### Haxe
 
-The `Front` static class is a direct reference to the `Front` global object.
-
-```haxe
-static function main()
-{
-	Front.initialize([root_element],[default_events]); 	
-}
-```
-
 ## Controller
 
-Controller classes will listen and handle events captured at `Front.root` using their `on` callback.
+Controller classes will listen and handle events captured at its root **View** using their `on` callback.
 
 ### Javascript
 Create a Controller instance following this template:	
 ```javascript
 var simple_controller =
-{
-	//View Path RegExp tester. default=null
-	var route: /some.regexp/,
+{	
 	//Allowed events. default="" and accepts all events.	
 	var allow: "click,focus,model",
 	//'on' callback
-	//path   = Container View path or "" if none
-	//event  = event.type
+	//view   = String with the path and event of the View which triggered it. view == 'path.to.view@event'	
 	//target = event.target
-	//data   = Model data when 'model' event or if informed in Front.model.dispatch call
-	var on: function(path,event_type,target,data) { }
+	//data   = Model data when 'model' event or if informed in Front.model.dispatch call (defaults to null)
+	var on: function(view,target,data) { }
 };
-Front.controller.add(simple_controller,[/some.other.regexp/]);
+Front.controller.add("path.to.view",simple_controller);
 ```
-The created controller will have its `on` method called if the event type matches `simple_controller.allow` and the event target's containing view matches the `route`.
+The created controller will have its `on` method called if the event type matches `simple_controller.allow` and if it originates from within the chosen **View**.
 
 ### Haxe
-The Haxe target makes full use of its language features to create a `BaseController` class that can be extended.
-
-```haxe
-class SimpleController extends BaseController
-{
-	override public function new(p_name:String):Void
-	{
-		super(p_name);
-		allow = "model";		
-	}
-	
-	override public function on(p_path:String, p_event:String, p_target:Element, p_data:Dynamic):Void 
-	{
-		switch(p_event)
-		{
-			case "model":
-				trace(p_data);		
-		}		
-	}
-}
-
-/*...*/
-
-Front.controller.add(new SimpleController("simple"),["some.regexp.str.rule"]);
-```
 
 ## Model
 
-The `model`attribute helps the `Front` class search for elements responsible for data storage and update.
-Elements with the `model`attributes can have their data sampled like this:	
-
-```javascript
-//Will search an Element with model="some.model.attrib"
-var obj = Front.model.data("some.model.attrib");
+The **Model** attribute of the `Front` class is responsible by handling data inside the DOM.  
+Given:  
+```html
+<div :some>
+	<div :model>
+		<div :attrib>
+			...
+		</div>
+	</div>
+</div>
 ```
 
-Similarly in Haxe:
-	
-```haxe
-var obj : Dynamic = Front.model.data("some.model.attrib");
+```javascript
+//Will search an Element with this view path:
+var obj = Front.model.get("some.model.attrib");
 ```
 
 All Elements inside it with the `view` attribute will have their data sampled and returned in the resulting object.
 
 ```html
-<div model="foo">
-	<input type="text" view="name"/>
-	<input type="date" view="date"/>
-	<p view="field">Some Not-Input Element</p>
+<div :container>
+	<div :foo>
+		<input type="text" :name/>
+		<input type="date" :date/>
+		<p :field>Some Not-Input Element</p>
+	</div>
 </div>
 
 <script>
 	//Will return { name: 'content', date: 'yyyy-mm-dd', field: "Some Not-Input Element" }
-	console.log(Front.model.data("foo"));
+	console.log(Front.model.get("container.foo"));
 	
 	//Will fill the Element's 'value' when their 'view' matches the obj 'variables'
 	var d = { name: "NAME", date: "2000-01-01", field: "LOL" };
-	Front.model.data("foo",d);	
+	Front.model.set("container.foo",d);	
 </script>
 ```
 
@@ -232,11 +187,11 @@ Front.model.watch("some.model",true);
 
 Front.controller.add(
 {
-	on: function(p_path,p_event,p_target,p_data)
+	on: function(view,target,data)
 	{
-		if(p_event == "model")
+		if(view=="some.model@model")		
 		{
-			if(Front.model.attribute(p_target) == "some.model") console.log(p_data);
+			console.log(p_data);
 		}
 	}
 });
@@ -248,9 +203,9 @@ Front.controller.add(
 Views are useful to store the reference for important elements in the DOM.
 
 ```html
-<div view="content" model="content.form">
-	<div view="form">
-		<input type="text" view="name">
+<div :content>
+	<div :form>
+		<input type="text" :name>
 	</div>
 </div>
 ```
@@ -260,40 +215,16 @@ Views are useful to store the reference for important elements in the DOM.
 var div = Front.view.get("content.form");
 ```
 
-Similarly in Haxe:
-	
-```haxe
-var div : DivElement = cast Front.view.get("content.form");
-```
-
 ### Templates
-
-Some times we want to duplicate items in a list. 
-For these cases, it is possible to mark elements with `template`. 
-They will be invisible and cloneable using the method `Front.view.clone(path | element)`.
-
-```html
-<ul view="list">
-  <li view="item" template>This is Template</li>
-</ul>
-```
-
-```javascript
-var list = Front.view.get("list");
-var new_item = Front.view.clone("list.item");
-new_item.textContent = "Item X";
-list.appendChild(new_item);
-```
-
 
 ## Events
 
 You can listen to more events besides the default ones:
 ```javascript
 //Enables the mouseover event.
-Front.listen("mouseover",true);
+Front.controller.listen("path.to.controller","mouseover",true);
 //Disables the mouseout event.
-Front.listen("mouseout",false);
+Front.controller.listen("path.to.controller","mouseover",false);
 ```
 
 ## Data Binding
@@ -302,9 +233,9 @@ It is possible to transfer changes in model elements to other parts of the DOM.
 
 
 ```html
-<div view="content" model="content.form">
-	<div view="form">
-		<input type="text" view="name">
+<div :content>
+	<div :form>
+		<input type="text" :name>
 	</div>
 </div>
 
@@ -312,10 +243,11 @@ It is possible to transfer changes in model elements to other parts of the DOM.
 ```
 
 Everytime `content.form.name` changes, the new value will be applied on the `<p>` Element marked with the `bind` attribute.
-The syntax for the `bind` attribute is `[path.to.model].[view-attrib]`
+The syntax for the `bind` attribute is `[path.to.view].[view-attrib]`
 
 ### Request  
 The `XMLHttpRequest` features allow easy and fast creation of http requests. It is possible to create custom ones or use the `get`and `post` shortcuts.  
+
 #### Front  
 The `Front.request` class allows for classic requests with any kind of data. In order to simplify the operation, users only need to define a single callback to handle everything. Also a `binary` flag can be passed so the request returns an `ArrayBuffer`as result.  
 ```javascript
