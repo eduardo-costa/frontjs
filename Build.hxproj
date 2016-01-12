@@ -4,11 +4,11 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="deploy\app-haxe.js" />
+    <movie path="deploy\js\frontjs.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="JavaScript" />
     <movie background="#FFFFFF" />
@@ -16,14 +16,14 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="." />
+    <class path="source" />
   </classpaths>
   <!-- Build options -->
   <build>
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="HaxeTest" />
+    <option mainClass="Main" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -38,11 +38,11 @@
     <compile path="source\Dungeon00.hx" />
     <compile path="source\examples\dungeon\DungeonApp.hx" />
     <compile path="source\examples\curves\Main.hx" />
-    <compile path="source\Main.hx" />
     <compile path="MainHTML.hx" />
     <compile path="Main.hx" />
     <compile path="WebBundleTest.hx" />
     <compile path="HaxeTest.hx" />
+    <compile path="source\Main.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -56,7 +56,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Webserver" />
-    <option testMovieCommand="deploy\index-haxe.html" />
+    <option testMovieCommand="deploy\test.html" />
   </options>
   <!-- Plugin storage -->
   <storage />

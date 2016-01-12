@@ -1,0 +1,36 @@
+{
+  "name": "frontjs",
+  "homepage": "https://github.com/eduardo-costa/frontjs",
+  "authors": [
+    "Eduardo Dias da Costa <eduardo@thelaborat.org>"
+  ],
+  "description": "Lightweight Front-End MVC Framework",
+  "main": [],
+  "moduleType": [],
+  "keywords": [
+    "model",
+    "view",
+    "controller",
+    "haxe",
+    "mvc",
+    "front-end",
+    "javascript",
+    "framework"
+  ],
+  
+  "ignore": [
+    "*.hxproj",
+	"old/",
+	"deploy/test.html",
+	"LICENSE",
+	"README.md",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "spec",
+    "build/output"
+  ],
+
+  "license": "MIT",
+  "private": true
+}
