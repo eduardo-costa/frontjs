@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="deploy\js\frontjs.js" />
+    <movie path="js\frontjs.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -56,7 +56,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Webserver" />
-    <option testMovieCommand="deploy\test.html" />
+    <option testMovieCommand="test.html" />
   </options>
   <!-- Plugin storage -->
   <storage />

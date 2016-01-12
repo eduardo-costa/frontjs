@@ -18,17 +18,18 @@
     "framework"
   ],
   
-  "ignore": [
-	"*.hxproj",
-	"old/",
-	"deploy/test.html",
-	"LICENSE",
-	"README.md",
+  "ignore": [	
 	"**/.*",
-	"node_modules",
-	"bower_components",
-	"spec",
-	"build/output"
+	"old/",
+	"node_modules/",
+	"bower_components/",
+	"source/",	
+	"*.hxproj",
+	"test.html",	
+	"README.md",
+	"bower.json",
+	"haxelib.json",
+	"LICENSE",	
   ],
 
   "license": "MIT",
