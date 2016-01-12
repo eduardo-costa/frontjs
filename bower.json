@@ -5,7 +5,7 @@
     "Eduardo Dias da Costa <eduardo@thelaborat.org>"
   ],
   "description": "Lightweight Front-End MVC Framework",
-  "main": [],
+  "main": ["deploy/js/frontjs.js"],
   "moduleType": [],
   "keywords": [
     "model",
@@ -19,16 +19,16 @@
   ],
   
   "ignore": [
-    "*.hxproj",
+	"*.hxproj",
 	"old/",
 	"deploy/test.html",
 	"LICENSE",
 	"README.md",
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "spec",
-    "build/output"
+	"**/.*",
+	"node_modules",
+	"bower_components",
+	"spec",
+	"build/output"
   ],
 
   "license": "MIT",
