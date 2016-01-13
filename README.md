@@ -24,7 +24,7 @@ Clean and Fast MVC for your Front-End app.
 Front.initialize();
 
 //Home event controller
-Front.controller.add("home",
+Front.controller.add(
 {  
   //Allowed events
   allow: ["click","input"],
@@ -46,7 +46,7 @@ Front.controller.add("home",
       case "home.footer@click": break;
     }
   }
-});
+},"home");
 
 //Gallery event controller
 Front.controller.add("gallery"
