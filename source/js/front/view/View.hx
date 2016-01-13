@@ -14,35 +14,14 @@ extern class View extends Element
 	 * @return
 	 */
 	public var name(get, set):String;
-	inline private function get_name():String 
-	{ 
-		if (this.attributes.length <= 0) return "";
-		var n : String = this.attributes[this.attributes.length - 1].name;
-		if (n.charAt(0) == ":") 			return StringTools.replace(n, ":", "");
-		if (this.hasAttribute("data-name")) return this.getAttribute("data-name");
-		if (this.hasAttribute("name")) 		return this.getAttribute("name");
-		return "";
-	}	
-	inline private function set_name(v:String):String 
-	{		
-		if (this.attributes.length <= 1) return "";
-		v = v == null ? "" : v;
-		this.removeAttribute(this.attributes[this.attributes.length].name);
-		this.setAttribute(":" + v, "");
-		return v;
-	}
+	inline private function get_name():String {  return Front.view.name(this); }	
+	inline private function set_name(v:String):String {	return Front.view.name(this, v);	}
 	
 	/**
-	 * Shortcut to query select using this element as root.
-	 * @param	p_query
-	 * @return
+	 * Reference to its most close View parent.
 	 */
-	inline public function query(p_query:String):View { return cast this.querySelector(p_query); }
+	public var parent(get, never):View;
+	inline private function get_parent():View {  return Front.view.parent(this); }	
 	
-	/**
-	 * Shortcut to query select using this element as root.
-	 * @param	p_query
-	 * @return
-	 */
-	inline public function queryAll(p_query:String):Array<View> { return cast this.querySelectorAll(p_query); }
+	
 }

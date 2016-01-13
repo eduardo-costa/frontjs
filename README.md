@@ -6,16 +6,16 @@ Clean and Fast MVC for your Front-End app.
 * Sample your Models  
 
 ```html
-<div :home>
-  <div :content>
+<div n="home">
+  <div n="content">
   </div>
-  <div :footer>
+  <div n="footer">
   </div>
 </div>
-<div :gallery>
-  <div :header>
+<div n="gallery">
+  <div n="header">
   </div>
-  <div :pages>
+  <div n="pages">
   </div>
 </div>
 ```
@@ -27,7 +27,7 @@ Front.initialize();
 Front.controller.add("home",
 {  
   //Allowed events
-  allow: "click,input",
+  allow: ["click","input"],
   
   //Notification Handler
   on: function(e)
@@ -36,7 +36,7 @@ Front.controller.add("home",
     
 	//e.type   == 'input' || 'click'
 	//e.view   == 'path.to.view'
-	//e.target == DOM Element
+	//e.src    == source event
 	//e.path   == 'path.to.view@input' || 'path.to.view@click'
 	//e.data   == null || {some-model-data}
 	
@@ -51,7 +51,7 @@ Front.controller.add("home",
 //Gallery event controller
 Front.controller.add("gallery"
 {  
-  allow: "click,input,change",
+  allow: ["click","input","change"],
   on: function(e)
   {
 	  /*...*/
@@ -95,14 +95,13 @@ Include the sources:
 ### HTML
 First mark in the HTML whose elements will be a **View**.  
 Allowed **name** attribute:
-* `<div attrib0="a0" attrib1="a1" ... :view-name></div>`
-* `<div attrib0="a0" attrib1="a1" ... name="view-name"></div>`
-* `<div attrib0="a0" attrib1="a1" ... data-name="view-name"></div>`
+* `<div attrib0="a0" attrib1="a1" ... n="view-name"></div>`
+* `<div attrib0="a0" attrib1="a1" ... data-n="view-name"></div>`
 
 ```html
-<div :content>
-	<div :form>
-		<input type="text" :name>
+<div n="content">
+	<div n="form">
+		<input type="text" n="name">
 	</div>
 </div>
 ```
@@ -113,8 +112,7 @@ The `Front` global object gives access to all MVC elements and other utility fun
 Be sure to initialize `Front` before using it.  
 
 ```javascript
-//default_events -> defaults to ["input","change","click"]
-Front.initialize([default_events]); 
+Front.init(); 
 ```
 
 ### Haxe
@@ -129,41 +127,28 @@ Create a Controller instance following this template:
 var simple_controller =
 {	
 	//Allowed events. default="" and accepts all events.	
-	var allow: "click,focus,model",
+	allow: ["click","focus","model"],
 	//'on' callback	
-	var on: function(e) { }
+	on: function(e) { }
 };
-Front.controller.add("path.to.view",simple_controller);
+Front.controller.add(simple_controller,"path.to.view");
+
+var v = Front.view.get("path.to.view");
+Front.controller.add(simple_controller,v);
 ```
 The created controller will have its `on` method called if the event type matches `simple_controller.allow` and if it originates from within the chosen **View**.
 
 ## Model
 
-The **Model** attribute of the `Front` class is responsible by handling data inside the DOM.  
-Given:  
-```html
-<div :some>
-	<div :model>
-		<div :attrib>
-			...
-		</div>
-	</div>
-</div>
-```
-
-```javascript
-//Will search an Element with this view path:
-var obj = Front.model.get("some.model.attrib");
-```
-
-All Elements inside the sampled `path.to.view` will have its contents returned as an object.  
+The **Model** instance of the `Front` class is responsible by handling data inside the DOM.
+All Elements inside a sampled `path.to.view` will have its contents returned as an object.  
 
 ```html
-<div :container>
-	<div :foo>
-		<input type="text" :name/>
-		<input type="date" :date/>
-		<p :field>Some Not-Input Element</p>
+<div n="container">
+	<div n="foo">
+		<input type="text" n="name"/>
+		<input type="date" n="date"/>
+		<p n="field">Some Not-Input Element</p>
 	</div>
 </div>
 
@@ -204,9 +189,9 @@ Front.controller.add(
 Views are useful to store the reference for important elements in the DOM.
 
 ```html
-<div :content>
-	<div :form>
-		<input type="text" :name>
+<div n="content">
+	<div n="form">
+		<input type="text" n="name">
 	</div>
 </div>
 ```
@@ -234,9 +219,9 @@ It is possible to transfer changes in model elements to other parts of the DOM.
 
 
 ```html
-<div :content>
-	<div :form>
-		<input type="text" :name>
+<div n="content">
+	<div :n="form">
+		<input type="text" n="name">
 	</div>
 </div>
 
