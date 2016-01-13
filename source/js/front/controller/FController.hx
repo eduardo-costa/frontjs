@@ -97,17 +97,21 @@ class FController
 	{		
 		var cev : ControllerEvent = cast { };
 		cev.path    = p_path;
-		cev.type 	= p_path.indexOf("@") >= 0 ? p_path.split("@").pop() : "";
-		cev.view    = p_path.indexOf("@") >= 0 ? p_path.split("@").shift() : "";
+		
+		var aidx : Int = p_path.indexOf("@");
+		var splt : Array<String> = aidx >= 0 ? p_path.split("@") : [];
+		cev.type 	= aidx >= 0 ? splt.pop() : "";
+		cev.view    = aidx >= 0 ? splt.shift() : "";
+		
 		cev.src     = null;				
 		cev.data    = p_data;
-		for (c in list) c.on(cev);
+		for (i in 0...list.length) list[i].on(cev);
 	}
 	
 	/**
 	 * Removes all controllers from the pool.
 	 */
-	public function clear():Void { for (c in list) remove(c); }
+	public function clear():Void { for (i in 0...list.length) remove(list[i]); }
 	
 	
 }

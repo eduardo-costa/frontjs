@@ -167,25 +167,26 @@ js_front_controller_FController.prototype = {
 	,dispatch: function(p_path,p_data) {
 		var cev = { };
 		cev.path = p_path;
-		if(p_path.indexOf("@") >= 0) cev.type = p_path.split("@").pop(); else cev.type = "";
-		if(p_path.indexOf("@") >= 0) cev.view = p_path.split("@").shift(); else cev.view = "";
+		var aidx = p_path.indexOf("@");
+		var splt;
+		if(aidx >= 0) splt = p_path.split("@"); else splt = [];
+		if(aidx >= 0) cev.type = splt.pop(); else cev.type = "";
+		if(aidx >= 0) cev.view = splt.shift(); else cev.view = "";
 		cev.src = null;
 		cev.data = p_data;
-		var _g = 0;
-		var _g1 = this.list;
-		while(_g < _g1.length) {
-			var c = _g1[_g];
-			++_g;
-			c.on(cev);
+		var _g1 = 0;
+		var _g = this.list.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.list[i].on(cev);
 		}
 	}
 	,clear: function() {
-		var _g = 0;
-		var _g1 = this.list;
-		while(_g < _g1.length) {
-			var c = _g1[_g];
-			++_g;
-			this.remove(c);
+		var _g1 = 0;
+		var _g = this.list.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.remove(this.list[i]);
 		}
 	}
 	,__class__: js_front_controller_FController
