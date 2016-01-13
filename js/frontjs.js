@@ -26,6 +26,22 @@ Main.main = function() {
 	js_front_Front.init();
 };
 Math.__name__ = true;
+var Reflect = function() { };
+Reflect.__name__ = true;
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	if(o == null) return null; else if(o.__properties__ && (tmp = o.__properties__["get_" + field])) return o[tmp](); else return o[field];
+};
+Reflect.fields = function(o) {
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(f != "__id__" && f != "hx__closures__" && hasOwnProperty.call(o,f)) a.push(f);
+		}
+	}
+	return a;
+};
 var js_Boot = function() { };
 js_Boot.__name__ = true;
 js_Boot.getClass = function(o) {
@@ -92,11 +108,74 @@ js_Boot.__isNativeObj = function(o) {
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
+var js_front_FRequest = function() {
+};
+js_front_FRequest.__name__ = true;
+js_front_FRequest.prototype = {
+	create: function(p_method,p_url,p_callback,p_binary,p_data) {
+		if(p_binary == null) p_binary = false;
+		var method;
+		if(p_method == null) method = "get"; else method = p_method;
+		var binary = p_binary;
+		var ld = new XMLHttpRequest();
+		if(binary) {
+			if($bind(ld,ld.overrideMimeType) != null) ld.overrideMimeType("application/octet-stream");
+			ld.responseType = "arraybuffer";
+		}
+		var req_progress = function(e) {
+			var p;
+			p = (e.total <= 0?0:e.loaded / (e.total + 5)) * 0.9999;
+			if(p_callback != null) p_callback(null,p,e);
+		};
+		ld.onprogress = req_progress;
+		var req_upload_progress = function(e1) {
+			if(p_data != null) {
+				var p1;
+				p1 = (e1.total <= 0?0:e1.loaded / (e1.total + 5)) * 0.9999;
+				if(p_callback != null) p_callback(null,-(1.0 - p1),e1);
+			}
+		};
+		ld.upload.onprogress = req_upload_progress;
+		var req_onload = function(e2) {
+			if(p_callback != null) p_callback(ld.response,1.0,e2);
+		};
+		ld.onload = req_onload;
+		var req_onerror = function(e3) {
+			if(p_callback != null) p_callback(null,1.0,e3);
+		};
+		ld.onerror = req_onerror;
+		ld.open(method,p_url,true);
+		if(p_data != null) {
+			if(js_Boot.__instanceof(p_data,ArrayBuffer)) ld.send(p_data); else if(js_Boot.__instanceof(p_data,Blob)) ld.send(p_data); else if(typeof(p_data) == "string") ld.send(p_data); else if(js_Boot.__instanceof(p_data,FormData)) ld.send(p_data); else {
+				var fd = new FormData();
+				var fl = Reflect.fields(p_data);
+				var _g1 = 0;
+				var _g = fl.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					fd.append(fl[i],Reflect.getProperty(p_data,fl[i]));
+				}
+				ld.send(fd);
+			}
+		} else ld.send();
+		return ld;
+	}
+	,get: function(p_url,p_callback,p_binary,p_data) {
+		if(p_binary == null) p_binary = false;
+		return this.create("get",p_url,p_callback,p_binary,p_data);
+	}
+	,post: function(p_url,p_callback,p_binary,p_data) {
+		if(p_binary == null) p_binary = false;
+		return this.create("post",p_url,p_callback,p_binary,p_data);
+	}
+	,__class__: js_front_FRequest
+};
 var js_front_Front = function() { };
 js_front_Front.__name__ = true;
 js_front_Front.init = function() {
 	js_front_Front.view = new js_front_view_FView();
 	js_front_Front.controller = new js_front_controller_FController();
+	js_front_Front.request = new js_front_FRequest();
 };
 var js_front_controller_Controller = function() {
 	this.enabled = true;
