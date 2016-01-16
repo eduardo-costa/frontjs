@@ -1,6 +1,9 @@
 package js.front;
+import haxe.Timer;
 import js.front.controller.FController;
+import js.front.model.FModel;
 import js.front.view.FView;
+import js.html.Event;
 
 /**
  * Class that implements FrontJS root class.
@@ -8,6 +11,10 @@ import js.front.view.FView;
  */
 class Front
 {
+	/**
+	 * Reference to the class that implements Model features.
+	 */
+	static public var model : FModel;
 
 	/**
 	 * Reference to the class that implements View features.
@@ -29,9 +36,21 @@ class Front
 	 */
 	static public function init():Void
 	{
+		model       = new FModel();
 		view 		= new FView();
 		controller  = new FController();
 		request     = new FRequest();
+				
+		Browser.window.addEventListener("load", function(e)
+		{			
+			Timer.delay(
+			function delayed_component_cb() 
+			{ 
+				Browser.window.dispatchEvent(new Event("component")); 
+				view.parse();
+			}, 1);
+		});
+		
 	}
 	
 }

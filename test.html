@@ -6,8 +6,20 @@
 </head>
 <body>
 
-	<script src="js/frontjs.min.js"></script>
+	<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+	<script src="js/components.js"></script>
+	<script src="js/frontjs.js"></script>
 	
+	
+	<mdl-button>A</mdl-button>
+	<mdl-button>B</mdl-button>
+	<mdl-button>C</mdl-button>
+		
+	<mdl-slider min='-1' max='1' value='-0.5'></mdl-slider>
+		
 	<div n="container">
 		<div n="a">
 			<div n="c0"></div>
@@ -37,6 +49,30 @@
 			</div>
 			
 		</div>
+		
+		<form n="form">
+			<div n="data">
+				<div n="paragraphs">
+					<p n="p0">P0 Text</p>	
+					<p n="p1">P1 Text</p>	
+				</div>				
+				<input type="text" n="field" />
+				<textarea n="textarea"></textarea>
+				<input type="checkbox" n="cb" />
+				<select n="selection">
+					<option>A</option>
+					<option>B</option>
+					<option>C</option>
+				</select>
+				<input type="radio" name="g" n="r0"/>
+				<input type="radio" name="g" n="r1"/>
+				<input type="radio" name="g" n="r2"/>
+				<input type="number" value="0" n="num" />
+				<input type="range" min="0" max="1" step="0.1" n="rng"/>
+				<input type="color" n="color"/>
+			</div>
+		</form>
+		
 	</div>
 	
 	

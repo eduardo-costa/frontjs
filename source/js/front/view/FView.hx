@@ -1,5 +1,11 @@
 package js.front.view;
+import haxe.Timer;
+import js.html.Attr;
 import js.html.DOMElement;
+import js.html.Event;
+import js.html.MutationObserver;
+import js.html.MutationRecord;
+import js.html.NamedNodeMap;
 import js.html.NodeList;
 
 /**
@@ -9,9 +15,33 @@ import js.html.NodeList;
 class FView
 {
 	/**
+	 * List of components templates.
+	 */
+	public var components : Array<ViewComponent>;
+	
+	/**
+	 * Blocks the mutation handling while components are parsed.
+	 */
+	private var m_mutation_lock : Bool;
+	
+	/**
 	 * CTOR.
 	 */
-	public function new() {	}	
+	public function new() 
+	{
+		components = [];
+		
+		m_mutation_lock = false;
+		if (untyped (window.MutationObserver != null))
+		{
+			var mo : MutationObserver = new MutationObserver(onMutation);
+			mo.observe(Browser.document.body, { subtree:true, childList:true } );
+		}
+		else
+		{
+			untyped console.warning("FrontJS> MutationObserver not found!");
+		}
+	}
 	
 	/**
 	 * Get/Set a View's name attribute.
@@ -183,5 +213,79 @@ class FView
 		}
 		if (p_callback(p_element)==false) return;
 		for (i in 0...p_element.children.length) traverse(p_element.children[i], p_callback);		
+	}
+	
+	/**
+	 * Sweeps the DOM and insert components where they should appear.
+	 */
+	public function parse():Void
+	{
+		for (i in 0...components.length)
+		{
+			var c : ViewComponent = components[i];
+			var l : Array<View>   = cast Browser.document.body.querySelectorAll(c.tag);
+			for (j in 0...l.length)
+			{
+				var v : View = l[j];
+				var attribs : NamedNodeMap = v.attributes;				
+				var text    : String 	   = v.textContent;				
+				v.innerHTML = StringTools.replace(c.src, "$text", text);
+				parseElement(c,v);				
+			}
+		}
+		
+	}
+	
+	/**
+	 * Finishes parsing the component element.
+	 * @param	p_target
+	 */
+	private function parseElement(p_component:ViewComponent,p_target:View):Void
+	{
+		var v : View 		  = p_target;
+		var c : ViewComponent = p_component;
+		Timer.delay(function() 
+		{
+			var p   : View = cast v.parentElement;					
+			for (i in 0...v.children.length)
+			{	
+				var vc : View = cast v.children[i];				
+				for (j in 0...v.classList.length) 
+				{ 					
+					if(!vc.classList.contains(v.classList[j]))vc.classList.add(v.classList[j]); 					
+				}
+				for (j in 0...v.attributes.length) 
+				{ 
+					var a : Attr = v.attributes[j]; 
+					if (a.name == "class") continue;
+					vc.setAttribute(a.name, a.value); 					
+				}
+			}
+			
+			if (c.init != null) c.init(v);
+			
+			var is_inner : Bool = c.inner == null ? true : c.inner;			
+			if (is_inner) return;
+			var p   : View = cast v.parentElement;					
+			for (i in 0...v.children.length)
+			{	
+				var vc : View = cast v.children[i];				
+				if (v.nextSibling != null) { p.insertBefore(vc,v); } else { p.appendChild(vc); }						
+			}					
+			if(p!=null)p.removeChild(v);					
+		}, 1);
+	}
+	
+	/**
+	 * Callback that handles DOM changes.
+	 * @param	p_list
+	 * @param	p_observer
+	 */
+	private function onMutation(p_list : Array<MutationRecord>, p_observer : MutationObserver):Void
+	{
+		if (m_mutation_lock) return;
+		m_mutation_lock = true;
+		parse();
+		Timer.delay(function() { m_mutation_lock = false; }, 2);
 	}
 }

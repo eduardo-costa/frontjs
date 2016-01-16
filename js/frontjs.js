@@ -42,6 +42,36 @@ Reflect.fields = function(o) {
 	}
 	return a;
 };
+var StringTools = function() { };
+StringTools.__name__ = true;
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+};
+var haxe_Timer = function(time_ms) {
+	var me = this;
+	this.id = setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe_Timer.__name__ = true;
+haxe_Timer.delay = function(f,time_ms) {
+	var t = new haxe_Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+};
+haxe_Timer.prototype = {
+	stop: function() {
+		if(this.id == null) return;
+		clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe_Timer
+};
 var js_Boot = function() { };
 js_Boot.__name__ = true;
 js_Boot.getClass = function(o) {
@@ -112,7 +142,7 @@ var js_front_FRequest = function() {
 };
 js_front_FRequest.__name__ = true;
 js_front_FRequest.prototype = {
-	create: function(p_method,p_url,p_callback,p_binary,p_data) {
+	create: function(p_method,p_url,p_callback,p_binary,p_data,p_headers) {
 		if(p_binary == null) p_binary = false;
 		var method;
 		if(p_method == null) method = "get"; else method = p_method;
@@ -137,45 +167,66 @@ js_front_FRequest.prototype = {
 		};
 		ld.upload.onprogress = req_upload_progress;
 		var req_onload = function(e2) {
-			if(p_callback != null) p_callback(ld.response,1.0,e2);
+			if(p_callback != null) p_callback(p_binary?new Uint8Array(ld.response):ld.response,1.0,e2);
 		};
 		ld.onload = req_onload;
 		var req_onerror = function(e3) {
 			if(p_callback != null) p_callback(null,1.0,e3);
 		};
 		ld.onerror = req_onerror;
+		if(p_headers != null) {
+			var fl = Reflect.fields(p_headers);
+			var _g1 = 0;
+			var _g = fl.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				ld.setRequestHeader(fl[i],Reflect.getProperty(p_headers,fl[i]));
+			}
+		}
 		ld.open(method,p_url,true);
 		if(p_data != null) {
 			if(js_Boot.__instanceof(p_data,ArrayBuffer)) ld.send(p_data); else if(js_Boot.__instanceof(p_data,Blob)) ld.send(p_data); else if(typeof(p_data) == "string") ld.send(p_data); else if(js_Boot.__instanceof(p_data,FormData)) ld.send(p_data); else {
 				var fd = new FormData();
-				var fl = Reflect.fields(p_data);
-				var _g1 = 0;
-				var _g = fl.length;
-				while(_g1 < _g) {
-					var i = _g1++;
-					fd.append(fl[i],Reflect.getProperty(p_data,fl[i]));
+				var fl1 = Reflect.fields(p_data);
+				var _g11 = 0;
+				var _g2 = fl1.length;
+				while(_g11 < _g2) {
+					var i1 = _g11++;
+					fd.append(fl1[i1],Reflect.getProperty(p_data,fl1[i1]));
 				}
 				ld.send(fd);
 			}
 		} else ld.send();
 		return ld;
 	}
-	,get: function(p_url,p_callback,p_binary,p_data) {
+	,get: function(p_url,p_callback,p_binary,p_data,p_headers) {
 		if(p_binary == null) p_binary = false;
-		return this.create("get",p_url,p_callback,p_binary,p_data);
+		return this.create("get",p_url,p_callback,p_binary,p_data,p_headers);
 	}
-	,post: function(p_url,p_callback,p_binary,p_data) {
+	,post: function(p_url,p_callback,p_binary,p_data,p_headers) {
 		if(p_binary == null) p_binary = false;
-		return this.create("post",p_url,p_callback,p_binary,p_data);
+		return this.create("post",p_url,p_callback,p_binary,p_data,p_headers);
 	}
 	,__class__: js_front_FRequest
 };
 var js_front_Front = function() { };
 js_front_Front.__name__ = true;
 js_front_Front.init = function() {
+	js_front_Front.model = new js_front_model_FModel();
 	js_front_Front.view = new js_front_view_FView();
 	js_front_Front.controller = new js_front_controller_FController();
 	js_front_Front.request = new js_front_FRequest();
+	window.addEventListener("load",function(e) {
+		haxe_Timer.delay((function($this) {
+			var $r;
+			var delayed_component_cb = function() {
+				window.dispatchEvent(new Event("component"));
+				js_front_Front.view.parse();
+			};
+			$r = delayed_component_cb;
+			return $r;
+		}(this)),1);
+	});
 };
 var js_front_controller_Controller = function() {
 	this.enabled = true;
@@ -270,7 +321,85 @@ js_front_controller_FController.prototype = {
 	}
 	,__class__: js_front_controller_FController
 };
+var js_front_model_FModel = function() {
+};
+js_front_model_FModel.__name__ = true;
+js_front_model_FModel.prototype = {
+	data: function(p_target,p_value) {
+		var _g2 = this;
+		var v;
+		if(typeof(p_target) == "string") v = js_front_Front.view.get(p_target); else v = p_target;
+		var res = { };
+		js_front_Front.view.traverse(v,function(e) {
+			var it = e;
+			if(js_front_Front.view.name(it) == "") return;
+			var has_children = true;
+			if(it.children.length <= 0) has_children = false;
+			if(it.nodeName.toLowerCase() == "select") has_children = false;
+			if(!has_children) {
+				var path = js_front_Front.view.path(it,v);
+				var tks = path.split(".");
+				var d = res;
+				var dv = p_value;
+				var _g1 = 0;
+				var _g = tks.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					if(i >= tks.length - 1) d[tks[i]] = _g2.value(it,dv == null?dv:dv[tks[i]]); else {
+						if(dv != null) dv = dv[tks[i]];
+						if(d[tks[i]] == null) d[tks[i]] = { };
+						d = d[tks[i]];
+					}
+				}
+			}
+		});
+		return res;
+	}
+	,value: function(n,v) {
+		var nn = n.nodeName.toLowerCase();
+		switch(nn) {
+		case "input":
+			var itp;
+			if(nn == "input") {
+				if(n.type == null) itp = ""; else itp = n.type.toLowerCase();
+			} else itp = "";
+			switch(itp) {
+			case "checkbox":
+				if(v == null) return n.checked; else return n.checked = v;
+				break;
+			case "radio":
+				if(v == null) return n.checked; else return n.checked = v;
+				break;
+			case "number":
+				if(v == null) return n.valueAsNumber; else return n.valueAsNumber = v;
+				break;
+			case "range":
+				if(v == null) return n.valueAsNumber; else return n.valueAsNumber = v;
+				break;
+			default:
+				if(v == null) return n.value; else return n.value = v;
+			}
+			break;
+		case "select":
+			if(v == null) return n.selectedIndex; else return n.selectedIndex = v;
+			break;
+		case "textarea":
+			if(v == null) return n.value; else return n.value = v;
+			break;
+		default:
+			if(v == null) return n.textContent; else return n.textContent = v;
+		}
+		return "";
+	}
+	,__class__: js_front_model_FModel
+};
 var js_front_view_FView = function() {
+	this.components = [];
+	this.m_mutation_lock = false;
+	if(window.MutationObserver != null) {
+		var mo = new MutationObserver($bind(this,this.onMutation));
+		mo.observe(window.document.body,{ subtree : true, childList : true});
+	} else console.warning("FrontJS> MutationObserver not found!");
 };
 js_front_view_FView.__name__ = true;
 js_front_view_FView.prototype = {
@@ -385,6 +514,74 @@ js_front_view_FView.prototype = {
 			var i1 = _g11++;
 			this.traverse(p_element.children[i1],p_callback);
 		}
+	}
+	,parse: function() {
+		var _g1 = 0;
+		var _g = this.components.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var c = this.components[i];
+			var l = window.document.body.querySelectorAll(c.tag);
+			var _g3 = 0;
+			var _g2 = l.length;
+			while(_g3 < _g2) {
+				var j = _g3++;
+				var v = l[j];
+				var attribs = v.attributes;
+				var text = v.textContent;
+				v.innerHTML = StringTools.replace(c.src,"$text",text);
+				this.parseElement(c,v);
+			}
+		}
+	}
+	,parseElement: function(p_component,p_target) {
+		var v = p_target;
+		var c = p_component;
+		haxe_Timer.delay(function() {
+			var p = v.parentElement;
+			var _g1 = 0;
+			var _g = v.children.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				var vc = v.children[i];
+				var _g3 = 0;
+				var _g2 = v.classList.length;
+				while(_g3 < _g2) {
+					var j = _g3++;
+					if(!vc.classList.contains(v.classList[j])) vc.classList.add(v.classList[j]);
+				}
+				var _g31 = 0;
+				var _g21 = v.attributes.length;
+				while(_g31 < _g21) {
+					var j1 = _g31++;
+					var a = v.attributes[j1];
+					if(a.name == "class") continue;
+					vc.setAttribute(a.name,a.value);
+				}
+			}
+			if(c.init != null) c.init(v);
+			var is_inner;
+			if(c.inner == null) is_inner = true; else is_inner = c.inner;
+			if(is_inner) return;
+			var p1 = v.parentElement;
+			var _g11 = 0;
+			var _g4 = v.children.length;
+			while(_g11 < _g4) {
+				var i1 = _g11++;
+				var vc1 = v.children[i1];
+				if(v.nextSibling != null) p1.insertBefore(vc1,v); else p1.appendChild(vc1);
+			}
+			if(p1 != null) p1.removeChild(v);
+		},1);
+	}
+	,onMutation: function(p_list,p_observer) {
+		var _g = this;
+		if(this.m_mutation_lock) return;
+		this.m_mutation_lock = true;
+		this.parse();
+		haxe_Timer.delay(function() {
+			_g.m_mutation_lock = false;
+		},2);
 	}
 	,__class__: js_front_view_FView
 };

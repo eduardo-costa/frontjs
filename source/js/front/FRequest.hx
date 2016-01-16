@@ -4,6 +4,7 @@ import js.html.Blob;
 import js.html.Event;
 import js.html.FormData;
 import js.html.ProgressEvent;
+import js.html.Uint8Array;
 import js.html.XMLHttpRequest;
 import js.html.XMLHttpRequestResponseType;
 
@@ -31,7 +32,7 @@ class FRequest
 	 * @param	p_data
 	 * @return
 	 */
-	public function create(p_method:String,p_url:String,p_callback : Dynamic->Float->Event->Void,p_binary:Bool=false, p_data:Dynamic=null):XMLHttpRequest
+	public function create(p_method:String,p_url:String,p_callback : Dynamic->Float->Event->Void,p_binary:Bool=false, p_data:Dynamic=null,p_headers:Dynamic=null):XMLHttpRequest
 	{
 		var method : String = p_method==null ? "get" : p_method;
 		var binary : Bool   = p_binary;		
@@ -59,8 +60,16 @@ class FRequest
 			}
 		};
 		
-		ld.onload  = function req_onload(e:Event) { if(p_callback!=null) p_callback(ld.response,1.0,e); };
+		ld.onload  = function req_onload(e:Event) { if(p_callback!=null) p_callback(p_binary ? new Uint8Array(ld.response) : ld.response,1.0,e); };
 		ld.onerror = function req_onerror(e:Event){ if(p_callback!=null) p_callback(null,1.0,e); };
+		
+		if (p_headers != null)
+		{
+			var fl : Array<String> 	= Reflect.fields(p_headers);
+			for (i in 0...fl.length) ld.setRequestHeader(fl[i], Reflect.getProperty(p_headers, fl[i]));
+		}
+		
+		
 		ld.open(method,p_url,true);
 		if(p_data != null)
 		{			
@@ -80,6 +89,8 @@ class FRequest
 		{
 			ld.send();
 		}
+		
+		
 				
 		return ld;
 	}
@@ -91,9 +102,9 @@ class FRequest
 	 * @param	p_data
 	 * @return
 	 */
-	public function get(p_url:String, p_callback : Dynamic->Float->Event->Void,p_binary : Bool=false, p_data : Dynamic = null):XMLHttpRequest
+	public function get(p_url:String, p_callback : Dynamic->Float->Event->Void,p_binary : Bool=false, p_data : Dynamic = null,p_headers:Dynamic=null):XMLHttpRequest
 	{
-		return create("get", p_url, p_callback, p_binary, p_data);
+		return create("get", p_url, p_callback, p_binary, p_data,p_headers);
 	}
 	
 	/**
@@ -103,9 +114,9 @@ class FRequest
 	 * @param	p_data
 	 * @return
 	 */
-	public function post(p_url:String, p_callback : Dynamic->Float->Event->Void,p_binary : Bool=false, p_data : Dynamic = null):XMLHttpRequest
+	public function post(p_url:String, p_callback : Dynamic->Float->Event->Void,p_binary : Bool=false, p_data : Dynamic = null,p_headers:Dynamic=null):XMLHttpRequest
 	{
-		return create("post", p_url, p_callback, p_binary, p_data);
+		return create("post", p_url, p_callback, p_binary, p_data,p_headers);
 	}
 	
 }
